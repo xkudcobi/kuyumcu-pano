@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Canlı Altın Fiyatları</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0b0f17;
+    --s-lowest: #0a0e16;
+    --s-low: #131926;
+    --s: #1c2028;
+    --s-high: #262a33;
+    --s-highest: #31353e;
+    --text: #dfe2ee;
+    --text2: #d0c5af;
+    --muted: #99907c;
+    --slate: #94a3b8;
+    --gold: #d4af37;
+    --gold2: #f2ca50;
+    --gold3: #ffe088;
+    --gold-muted: #c59b27;
+    --on-gold: #3c2f00;
+    --up: #10b981;
+    --down: #ef4444;
+    --warn: #f59e0b;
+    --line: rgba(212,175,55,.12);
+    --line2: rgba(212,175,55,.3);
+    --sans: "Outfit", "Segoe UI", Roboto, Arial, sans-serif;
+    --mono: "JetBrains Mono", "Cascadia Mono", Consolas, monospace;
+    --scale: 1;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text); font-family: var(--sans); overflow: hidden; user-select: none; }
+  body { display: flex; flex-direction: column; position: relative; }
+  .mono { font-family: var(--mono); font-variant-numeric: tabular-nums lining-nums; font-feature-settings: "tnum" 1; }
+  .glow1, .glow2 { position: absolute; border-radius: 50%; pointer-events: none; filter: blur(120px); z-index: 0; }
+  .glow1 { top: -12vh; left: 50%; transform: translateX(-50%); width: 55vw; height: 28vh; background: rgba(245,158,11,.10); }
+  .glow2 { bottom: -8vh; right: 4vw; width: 30vw; height: 22vh; background: rgba(217,119,6,.06); }
+  #app { position: relative; z-index: 1; display: flex; flex-direction: column; height: 100%; padding: calc(1.2vh * var(--scale)) calc(1.4vw * var(--scale)); gap: calc(1vh * var(--scale)); }
+  .ctrls { transition: opacity .35s; }
+  .ctrls.hidden { opacity: 0; pointer-events: none; }
+
+  /* ---------- İkon butonlar ---------- */
+  .ctrls { display: flex; align-items: center; gap: .3vw; background: var(--s); padding: .35vh .3vw; border-radius: .5vw; }
+  .ib { width: calc(2.4vw * var(--scale)); height: calc(2.4vw * var(--scale)); min-width: 34px; min-height: 34px; border-radius: .35vw; border: none; background: transparent; color: var(--text2); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: background .15s, color .15s; }
+  .ib:hover { background: var(--s-high); color: var(--gold2); }
+  .ib.primary { background: var(--gold2); color: var(--on-gold); box-shadow: 0 2px 8px rgba(0,0,0,.35); }
+  .ib.primary:hover { background: var(--gold); color: var(--on-gold); }
+  .ib svg { width: 55%; height: 55%; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* ---------- Durum & saat ---------- */
+  .pill { display: inline-flex; align-items: center; gap: .5vw; background: var(--s); padding: .5vh .9vw; border-radius: 999px; font-size: calc(.75vw * var(--scale)); font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--up); white-space: nowrap; }
+  .pill .dot { position: relative; width: .55vw; height: .55vw; min-width: 8px; min-height: 8px; border-radius: 50%; background: currentColor; }
+  .pill.ok .dot::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: currentColor; opacity: .7; animation: ping 1.6s cubic-bezier(0,0,.2,1) infinite; }
+  .pill.warn { color: var(--warn); } .pill.err { color: var(--down); } .pill.idle { color: var(--slate); }
+  @keyframes ping { 75%, 100% { transform: scale(2.4); opacity: 0; } }
+  .clockbox { display: inline-flex; align-items: baseline; gap: .6vw; background: var(--s-high); padding: .5vh 1vw; border-radius: .45vw; box-shadow: inset 0 1px 3px rgba(0,0,0,.4); }
+  .clockbox .t { font-family: var(--mono); font-weight: 700; color: var(--gold2); font-size: calc(1.3vw * var(--scale)); letter-spacing: .04em; }
+  .clockbox .d { font-size: calc(.72vw * var(--scale)); color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
+
+  /* ==================== TABLO GÖRÜNÜMÜ ==================== */
+  #vTablo { display: none; flex: 1; flex-direction: column; gap: calc(1vh * var(--scale)); min-height: 0; }
+  body[data-view="tablo"] #vTablo { display: flex; }
+  .topcard { background: var(--s-low); border-radius: .7vw; padding: calc(1.2vh * var(--scale)) calc(1.4vw * var(--scale)); display: flex; align-items: center; justify-content: space-between; gap: 1vw; box-shadow: 0 10px 30px rgba(0,0,0,.35); flex: 0 0 auto; }
+  .brand { display: flex; align-items: center; gap: 1vw; min-width: 0; }
+  .mono-badge { position: relative; width: calc(3.2vw * var(--scale)); height: calc(3.2vw * var(--scale)); min-width: 44px; min-height: 44px; border-radius: .5vw; background: var(--s); display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-weight: 700; color: var(--gold2); font-size: calc(1.5vw * var(--scale)); box-shadow: 0 4px 12px rgba(0,0,0,.4); flex: 0 0 auto; }
+  .mono-badge::after { content: ""; position: absolute; top: -.25vw; right: -.25vw; width: .7vw; height: .7vw; min-width: 9px; min-height: 9px; border-radius: 50%; background: var(--gold2); border: .18vw solid var(--s-low); }
+  .brand h1 { margin: 0; font-size: calc(1.7vw * var(--scale)); font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--gold2); line-height: 1.15; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .brand h1:empty::before { content: "Canlı Altın Fiyatları"; }
+  .brand .sub { font-size: calc(.75vw * var(--scale)); color: var(--muted); text-transform: uppercase; letter-spacing: .12em; margin-top: .3vh; }
+  .brand .tag { display: inline-block; background: rgba(242,202,80,.1); color: var(--gold2); font-size: calc(.65vw * var(--scale)); font-weight: 600; letter-spacing: .12em; text-transform: uppercase; padding: .25vh .7vw; border-radius: 999px; margin-left: .8vw; vertical-align: middle; }
+  .topright { display: flex; align-items: center; gap: 1vw; flex: 0 0 auto; }
+
+  .board { flex: 1; min-height: 0; background: var(--s-lowest); border-radius: .7vw; padding: calc(.8vh * var(--scale)) calc(.6vw * var(--scale)); display: flex; flex-direction: column; box-shadow: inset 0 0 40px -15px rgba(242,202,80,.12), 0 12px 36px -8px rgba(0,0,0,.7); }
+  .thead, .trow { display: grid; grid-template-columns: 4fr 3fr 3fr 2fr; align-items: center; padding: 0 1.2vw; }
+  body[data-degisim="0"] .thead, body[data-degisim="0"] .trow { grid-template-columns: 4fr 3fr 3fr; }
+  body[data-degisim="0"] .chg { display: none !important; }
+  .thead { flex: 0 0 auto; background: rgba(38,42,51,.6); border-radius: .4vw; padding-top: .7vh; padding-bottom: .7vh; margin-bottom: .6vh; color: var(--muted); font-size: calc(.72vw * var(--scale)); font-weight: 600; text-transform: uppercase; letter-spacing: .14em; }
+  .thead > div:not(:first-child) { text-align: right; }
+  .thead b { color: var(--gold2); font-weight: 600; margin-right: .4vw; }
+  .trows { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: calc(.5vh * var(--scale)); }
+  .trow { flex: 1 1 0; min-height: 0; position: relative; background: rgba(28,32,40,.9); border-radius: .45vw; transition: background .2s; }
+  .trow.hero { border-left: .35vw solid var(--gold2); background: rgba(31,34,41,.95); }
+  .trow .pname { display: flex; align-items: center; gap: .9vw; min-width: 0; }
+  .kbadge { width: calc(2.1vw * var(--scale)); height: calc(2.1vw * var(--scale)); min-width: 30px; min-height: 30px; border-radius: .3vw; background: rgba(212,175,55,.15); color: var(--gold2); display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-weight: 700; font-size: calc(.75vw * var(--scale)); letter-spacing: .04em; flex: 0 0 auto; }
+  .kbadge.hi { background: linear-gradient(135deg, #f2ca50, #b8860b); color: #1a1405; }
+  .kbadge.dim { background: var(--s-high); color: var(--slate); }
+  .trow .nm { min-width: 0; }
+  .trow .nm .n { font-size: var(--tfs); font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.15; }
+  .trow.hero .nm .n { color: var(--gold2); }
+  .trow .nm .a { font-size: calc(var(--tfs) * .5); color: var(--muted); margin-top: .2vh; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .trow .pr { text-align: right; font-family: var(--mono); font-variant-numeric: tabular-nums; font-weight: 600; font-size: var(--tfs); color: var(--text); white-space: nowrap; border-radius: .3vw; padding: .3vh .5vw; transition: color .4s; }
+  .trow .pr .cur { font-size: .55em; color: var(--gold-muted); margin-left: .35em; font-weight: 500; }
+  .trow .pr.up { color: #4edea3; } .trow .pr.down { color: #ffb4ab; }
+  .trow .pr.stale { color: var(--slate); }
+  .trow .chg { text-align: right; font-family: var(--mono); font-weight: 600; font-size: calc(var(--tfs) * .62); padding-right: .5vw; white-space: nowrap; }
+  .chg.up { color: var(--up); } .chg.down { color: var(--down); } .chg.flat { color: var(--slate); }
+  .chg .ar { font-size: .7em; margin-right: .3em; }
+  @keyframes flashUp { 0% { background: rgba(88,231,170,.28); } 100% { background: transparent; } }
+  @keyframes flashDown { 0% { background: rgba(255,180,171,.28); } 100% { background: transparent; } }
+  .flash-up { animation: flashUp 1.2s cubic-bezier(.16,1,.3,1); }
+  .flash-down { animation: flashDown 1.2s cubic-bezier(.16,1,.3,1); }
+  .empty { flex: 1; display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: 1.3vw; text-align: center; }
+
+  .foot { flex: 0 0 auto; background: var(--s-low); border-radius: .6vw; padding: calc(.8vh * var(--scale)) calc(1.4vw * var(--scale)); display: flex; align-items: center; justify-content: space-between; gap: 1.5vw; font-size: calc(.75vw * var(--scale)); color: var(--muted); letter-spacing: .06em; text-transform: uppercase; }
+  .foot b { color: var(--gold2); font-weight: 600; }
+  .foot .mono { color: var(--text); }
+  .foot .note { flex: 1; text-align: center; color: var(--text2); text-transform: none; letter-spacing: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .foot .stale { color: var(--warn); }
+  .foot .sys { color: var(--up); font-weight: 600; }
+  .foot .sys.err { color: var(--down); } .foot .sys.warn { color: var(--warn); }
+
+  /* ==================== VİTRİN GÖRÜNÜMÜ ==================== */
+  #vVitrin { display: none; flex: 1; flex-direction: column; min-height: 0; }
+  body[data-view="vitrin"] #vVitrin { display: flex; }
+  .vhead { position: relative; text-align: center; padding: .4vh 0 1.4vh; border-bottom: 1px solid rgba(245,158,11,.2); flex: 0 0 auto; }
+  .vhead::after { content: ""; position: absolute; bottom: -1px; left: 50%; transform: translateX(-50%); width: 12vw; height: 2px; background: linear-gradient(90deg, transparent, #fbbf24, transparent); }
+  .vmeta { display: flex; align-items: center; justify-content: center; gap: 1.2vw; margin-bottom: .8vh; }
+  .vmeta .sep { width: .3vw; height: .3vw; border-radius: 50%; background: rgba(245,158,11,.4); }
+  .vmeta .clk { font-family: var(--mono); color: rgba(252,211,77,.85); font-weight: 600; font-size: calc(.9vw * var(--scale)); letter-spacing: .08em; }
+  .vmeta .src { color: var(--slate); font-size: calc(.72vw * var(--scale)); letter-spacing: .12em; text-transform: uppercase; font-weight: 500; }
+  .vhead h1 { margin: 0; font-size: calc(2.9vw * var(--scale)); font-weight: 900; letter-spacing: .22em; text-transform: uppercase; background: linear-gradient(135deg, #fff0c2 0%, #d4af37 50%, #aa820a 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .vhead h1:empty::before { content: "Canlı Altın Fiyatları"; }
+  .vhead p { margin: .5vh 0 0; color: rgba(253,230,138,.6); font-size: calc(.75vw * var(--scale)); letter-spacing: .35em; text-transform: uppercase; font-weight: 600; }
+  .vctrls { position: absolute; right: 0; top: 0; display: flex; align-items: center; gap: .6vw; }
+  .vmain { flex: 1; min-height: 0; display: flex; flex-direction: column; padding-top: 1vh; }
+  .vthead { display: grid; grid-template-columns: 5fr 3fr 4fr; gap: 1.5vw; padding: .6vh 2vw; margin-bottom: .6vh; border-bottom: 1px solid rgba(255,255,255,.1); color: rgba(251,191,36,.9); font-weight: 700; text-transform: uppercase; letter-spacing: .08em; font-size: calc(1vw * var(--scale)); flex: 0 0 auto; align-items: end; }
+  .vthead > div:not(:first-child) { text-align: right; }
+  .vthead small { display: block; color: var(--slate); font-size: .7em; font-weight: 400; letter-spacing: 0; margin-bottom: .2vh; }
+  .vthead .s small { color: rgba(251,191,36,.7); } .vthead .s { color: #fcd34d; }
+  .vpage { flex: 1; min-height: 0; display: flex; flex-direction: column; justify-content: space-between; gap: calc(.9vh * var(--scale)); transition: opacity .6s cubic-bezier(.4,0,.2,1), transform .6s cubic-bezier(.4,0,.2,1); }
+  .vpage.out { opacity: 0; transform: translateX(-2vw); }
+  .vrow { flex: 1 1 0; min-height: 0; display: grid; grid-template-columns: 5fr 3fr 4fr; gap: 1.5vw; align-items: center; padding: 0 2vw; background: #0f1420; border: 1px solid #1e293b; border-radius: 1vw; box-shadow: 0 6px 20px rgba(0,0,0,.35); }
+  .vrow.hero { background: #111624; border-color: rgba(245,158,11,.25); box-shadow: 0 0 35px -8px rgba(212,175,55,.18); }
+  .vrow .pname { display: flex; align-items: center; gap: 1.3vw; min-width: 0; }
+  .vbadge { width: calc(var(--vfs) * 1.5); height: calc(var(--vfs) * 1.5); border-radius: .7vw; background: var(--s-high); border: 1px solid rgba(245,158,11,.3); color: #fcd34d; display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-weight: 700; font-size: calc(var(--vfs) * .5); flex: 0 0 auto; }
+  .vrow.hero .vbadge { background: linear-gradient(135deg, #fbbf24, #d97706); color: #000; border: none; box-shadow: 0 4px 12px rgba(0,0,0,.4); }
+  .vrow .nm { min-width: 0; }
+  .vrow .nm .n { font-size: var(--vfs); font-weight: 800; color: #fff; letter-spacing: -.01em; line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: .8vw; }
+  .vrow .nm .n .yeni { font-size: .38em; font-weight: 700; color: #fcd34d; background: rgba(245,158,11,.2); border: 1px solid rgba(245,158,11,.4); border-radius: .3vw; padding: .1em .5em; letter-spacing: .05em; }
+  .vrow .nm .a { font-size: calc(var(--vfs) * .42); color: var(--slate); font-weight: 500; margin-top: .3vh; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .vrow.hero .nm .a { color: rgba(253,230,138,.6); }
+  .vrow .pr { text-align: right; font-family: var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; border-radius: .5vw; padding: .3vh .6vw; }
+  .vrow .pr.al { font-size: calc(var(--vfs) * 1.25); font-weight: 800; color: #f1f5f9; }
+  .vrow .pr.al .dec { font-size: .6em; color: var(--slate); }
+  .vrow .pr.sa { font-size: calc(var(--vfs) * 1.5); font-weight: 900; color: #fbbf24; }
+  .vrow .pr.sa .dec { font-size: .62em; color: rgba(252,211,77,.8); }
+  .vrow .pr .ar { font-size: .42em; vertical-align: middle; margin-right: .4em; }
+  .vrow .pr .ar.up { color: #34d399; } .vrow .pr .ar.down { color: #f87171; }
+  .vrow .pr .cur { font-family: var(--sans); font-size: .42em; color: rgba(251,191,36,.9); margin-left: .3em; font-weight: 700; vertical-align: middle; }
+  .vrow .pr.stale { opacity: .55; }
+  .vfoot { flex: 0 0 auto; padding-top: 1vh; margin-top: .6vh; border-top: 1px solid rgba(255,255,255,.1); display: flex; align-items: center; justify-content: space-between; gap: 1.5vw; }
+  .vfoot .pg { display: flex; align-items: center; gap: 1vw; }
+  .vfoot .pgbadge { display: inline-flex; align-items: center; gap: .6vw; background: rgba(15,23,42,.9); border: 1px solid rgba(245,158,11,.3); padding: .6vh 1vw; border-radius: .6vw; }
+  .vfoot .pgbadge .num { font-family: var(--mono); color: #fbbf24; font-weight: 800; font-size: calc(1vw * var(--scale)); letter-spacing: .08em; }
+  .vfoot .pgbadge .ttl { color: #cbd5e1; font-size: calc(.8vw * var(--scale)); font-weight: 600; letter-spacing: .05em; border-left: 1px solid #475569; padding-left: .6vw; }
+  .vfoot .prog { width: 12vw; height: .5vh; min-height: 5px; background: #1e293b; border-radius: 999px; overflow: hidden; border: 1px solid rgba(255,255,255,.05); }
+  .vfoot .prog i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #f59e0b, #fcd34d); }
+  .vfoot .prog i.run { width: 100%; transition: width var(--pgsec, 8s) linear; }
+  .vfoot .info { display: flex; align-items: center; gap: 1.2vw; color: var(--slate); font-size: calc(.8vw * var(--scale)); font-weight: 500; }
+  .vfoot .info .sep { width: .35vw; height: .35vw; border-radius: 50%; background: #475569; }
+  .vfoot .info .stale { color: var(--warn); }
+
+  /* ==================== AYARLAR PANELİ ==================== */
+  #overlay { position: fixed; inset: 0; background: rgba(7,10,15,.8); backdrop-filter: blur(4px); display: none; z-index: 10; }
+  #overlay.open { display: block; }
+  #panel { position: fixed; top: 0; right: 0; bottom: 0; width: min(680px, 100vw); background: #0f131c; border-left: 1px solid var(--line2); z-index: 11; transform: translateX(100%); transition: transform .28s cubic-bezier(.4,0,.2,1); display: flex; flex-direction: column; font-size: 14px; user-select: text; box-shadow: -20px 0 60px rgba(0,0,0,.6); }
+  #panel.open { transform: none; }
+  #panel > header { display: flex; align-items: center; gap: 12px; padding: 18px 22px; border-bottom: 1px solid var(--line); background: var(--s-lowest); }
+  #panel > header .ico { width: 40px; height: 40px; border-radius: 8px; background: var(--s); display: flex; align-items: center; justify-content: center; color: var(--gold2); }
+  #panel > header .ico svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+  #panel > header h2 { margin: 0; font-size: 20px; font-weight: 600; color: var(--text); }
+  #panel > header p { margin: 2px 0 0; font-size: 12px; color: var(--muted); }
+  #panel > header .sp { flex: 1; }
+  #panel .body { flex: 1; overflow-y: auto; padding: 18px 22px 24px; scrollbar-width: thin; scrollbar-color: var(--s-highest) transparent; }
+  #panel > footer { display: flex; gap: 12px; padding: 14px 22px; border-top: 1px solid var(--line); background: var(--s-lowest); }
+  .card { background: var(--s-low); border: 1px solid var(--line); border-radius: 10px; padding: 16px; margin-bottom: 14px; }
+  .card h3 { margin: 0 0 12px; font-size: 12px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--gold2); display: flex; align-items: center; justify-content: space-between; }
+  .card h3 .chip { font-size: 11px; letter-spacing: .04em; text-transform: none; color: var(--up); background: rgba(16,185,129,.12); padding: 3px 10px; border-radius: 999px; font-weight: 600; }
+  .card h3 .chip.warn { color: var(--warn); background: rgba(245,158,11,.12); } .card h3 .chip.err { color: var(--down); background: rgba(239,68,68,.12); }
+  .lbl { display: block; font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin: 12px 0 6px; }
+  .inp, select.inp { width: 100%; background: var(--s-lowest); color: var(--text); border: 1px solid rgba(255,255,255,.1); border-radius: 8px; padding: 11px 12px; font-size: 15px; font-family: var(--sans); outline: none; transition: border .15s, box-shadow .15s; }
+  .inp:focus { border-color: var(--gold); box-shadow: 0 0 0 2px rgba(212,175,55,.2); }
+  .seg { display: flex; background: var(--s-lowest); border-radius: 8px; padding: 3px; gap: 3px; }
+  .seg button { flex: 1; background: transparent; border: none; color: var(--muted); font-family: var(--sans); font-size: 13px; font-weight: 600; padding: 9px 6px; border-radius: 6px; cursor: pointer; transition: background .15s, color .15s; }
+  .seg button.on { background: var(--s-high); color: var(--text); }
+  .seg button:hover:not(.on) { color: var(--text2); }
+  .g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .toggle-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; background: var(--s-lowest); border-radius: 8px; padding: 12px 14px; margin-top: 12px; }
+  .toggle-row .tx b { display: block; font-size: 14px; font-weight: 600; color: var(--text); }
+  .toggle-row .tx span { font-size: 12px; color: var(--muted); }
+  .sw { position: relative; width: 48px; height: 26px; flex: 0 0 auto; }
+  .sw input { opacity: 0; width: 0; height: 0; position: absolute; }
+  .sw i { position: absolute; inset: 0; background: var(--s-highest); border-radius: 999px; cursor: pointer; transition: background .2s; }
+  .sw i::before { content: ""; position: absolute; width: 20px; height: 20px; left: 3px; top: 3px; background: #fff; border-radius: 50%; transition: transform .2s; }
+  .sw input:checked + i { background: var(--gold2); }
+  .sw input:checked + i::before { transform: translateX(22px); }
+  .sec { display: flex; align-items: center; justify-content: space-between; margin: 20px 0 10px; }
+  .sec h3 { margin: 0; font-size: 12px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--gold2); }
+  .sec p { margin: 3px 0 0; font-size: 12px; color: var(--muted); }
+  .sec .cnt { font-family: var(--mono); font-size: 12px; color: var(--slate); background: var(--s); padding: 5px 10px; border-radius: 6px; }
+  .pcard { background: var(--s-low); border: 1px solid var(--line); border-radius: 10px; padding: 14px; margin-bottom: 10px; transition: opacity .2s; }
+  .pcard.off { opacity: .45; }
+  .pcard .ph { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .pcard .ph input[type=checkbox] { width: 20px; height: 20px; accent-color: var(--gold2); cursor: pointer; }
+  .pcard .ph .nm { font-size: 16px; font-weight: 600; color: var(--text); }
+  .pcard .ph .kb { font-family: var(--mono); font-size: 11px; font-weight: 600; color: var(--gold2); background: rgba(212,175,55,.12); padding: 2px 7px; border-radius: 4px; }
+  .pcard .ph .sp { flex: 1; }
+  .pcard .ph button { width: 30px; height: 30px; background: var(--s); border: 1px solid rgba(255,255,255,.08); border-radius: 6px; color: var(--muted); cursor: pointer; font-size: 13px; }
+  .pcard .ph button:hover { color: var(--gold2); border-color: var(--gold); }
+  .kom { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 10px; }
+  .kbox { background: var(--s-lowest); border-radius: 8px; padding: 10px 12px; min-width: 0; }
+  .kbox .kh { display: flex; justify-content: space-between; font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 6px; }
+  .kbox.al .kh { color: #ffb4ab; } .kbox.sa .kh { color: #58e7aa; }
+  .kbox .kh small { color: var(--muted); font-weight: 500; letter-spacing: .02em; text-transform: none; }
+  .kbox .kr { display: flex; align-items: center; gap: 6px; }
+  .kbox .kr .sg { font-family: var(--mono); font-weight: 700; font-size: 18px; width: 14px; }
+  .kbox.al .sg { color: #ffb4ab; } .kbox.sa .sg { color: #58e7aa; }
+  .kbox .kr input { flex: 1; width: 0; min-width: 0; background: transparent; border: none; border-bottom: 1px solid rgba(255,255,255,.08); color: var(--text); font-family: var(--mono); font-size: 20px; font-weight: 600; text-align: right; padding: 2px 4px; outline: none; }
+  .kbox .kr input:focus { border-bottom-color: var(--gold); }
+  .kbox .kr .u { color: var(--muted); font-family: var(--mono); font-size: 12px; width: 18px; }
+  .kbox .kr + .kr { margin-top: 4px; }
+  .prev { margin-top: 10px; background: var(--s-lowest); border-radius: 8px; padding: 9px 12px; font-family: var(--mono); font-size: 12.5px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px 14px; }
+  .prev b { color: var(--text); font-weight: 600; } .prev b.g { color: var(--gold2); }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: var(--gold2); color: var(--on-gold); border: none; border-radius: 8px; padding: 13px 20px; font-family: var(--sans); font-weight: 700; font-size: 15px; cursor: pointer; transition: filter .15s, box-shadow .15s; flex: 2; }
+  .btn:hover { filter: brightness(1.06); box-shadow: 0 0 18px rgba(242,202,80,.25); }
+  .btn.ghost { flex: 1; background: rgba(212,175,55,.06); color: var(--text2); border: 1px solid rgba(212,175,55,.2); font-weight: 500; }
+  .btn.ghost:hover { color: var(--gold2); box-shadow: none; }
+  .ib.sm { width: 34px; height: 34px; border-radius: 6px; background: var(--s); }
+</style>
+</head>
+<body data-view="tablo" data-degisim="1">
+<div class="glow1"></div><div class="glow2"></div>
+
+<div id="app">
+
+  <!-- ===== TABLO GÖRÜNÜMÜ ===== -->
+  <section id="vTablo">
+    <div class="topcard hidebar">
+      <div class="brand">
+        <div class="mono-badge" id="tMono">A</div>
+        <div style="min-width:0">
+          <h1 id="tShop"></h1>
+          <div class="sub" id="tSub">Harem Altın · Kapalıçarşı serbest piyasa</div>
+        </div>
+        <span class="tag">Canlı Piyasa Fiyatları</span>
+      </div>
+      <div class="topright">
+        <div class="pill idle" id="tPill"><span class="dot"></span><span id="tPillTx">Bağlanıyor</span></div>
+        <div class="clockbox"><span class="t" id="tTime">--:--:--</span><span class="d" id="tDate"></span></div>
+        <div class="ctrls">
+          <button class="ib" data-act="settings" title="Ayarlar ve komisyon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
+          <button class="ib primary" data-act="full" title="Tam ekran (F)"><svg viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/></svg></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="board">
+      <div class="thead">
+        <div><b>◈</b>Ürün &amp; Ayar Adı</div>
+        <div>Alış <span style="color:var(--slate);letter-spacing:.06em">· Biz Alırız</span></div>
+        <div>Satış <span style="color:var(--slate);letter-spacing:.06em">· Biz Satarız</span></div>
+        <div class="chg">Değişim (Gün)</div>
+      </div>
+      <div class="trows" id="tRows"></div>
+    </div>
+
+    <div class="foot hidebar" id="tFoot">
+      <span><span class="sys" id="tSys">●</span>&nbsp; Son güncelleme: <span class="mono" id="tUpd">—</span> &nbsp;·&nbsp; Kaynak: <b id="tSrc">—</b></span>
+      <span class="note" id="tNote"></span>
+      <span class="stale" id="tStale"></span>
+    </div>
+  </section>
+
+  <!-- ===== VİTRİN GÖRÜNÜMÜ ===== -->
+  <section id="vVitrin">
+    <header class="vhead">
+      <div class="vmeta">
+        <div class="pill idle" id="vPill"><span class="dot"></span><span id="vPillTx">Bağlanıyor</span></div>
+        <span class="sep"></span>
+        <span class="clk" id="vTime">--:--:--</span>
+        <span class="sep"></span>
+        <span class="src" id="vSrc">Harem Altın</span>
+      </div>
+      <h1 id="vShop"></h1>
+      <p id="vSub">Güncel altın ve ziynet fiyat panosu</p>
+      <div class="vctrls hidebar">
+        <div class="ctrls">
+          <button class="ib" data-act="settings" title="Ayarlar ve komisyon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
+          <button class="ib primary" data-act="full" title="Tam ekran (F)"><svg viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/></svg></button>
+        </div>
+      </div>
+    </header>
+    <div class="vmain">
+      <div class="vthead">
+        <div>Ürün / Ayar Cinsi</div>
+        <div><small>Biz alırız</small>Alış (TL)</div>
+        <div class="s"><small>Biz satarız</small>Satış (TL)</div>
+      </div>
+      <div class="vpage" id="vPage"></div>
+    </div>
+    <footer class="vfoot hidebar">
+      <div class="pg">
+        <div class="pgbadge"><span class="num" id="vPgNum">SAYFA 1 / 1</span><span class="ttl" id="vPgTtl">Sarrafiye &amp; Gram Altın</span></div>
+        <div class="prog"><i id="vProg"></i></div>
+      </div>
+      <div class="info">
+        <span class="stale" id="vStale"></span>
+        <span id="vNote"></span>
+        <span class="sep"></span>
+        <span>Son güncelleme: <span class="mono" id="vUpd">—</span></span>
+      </div>
+    </footer>
+  </section>
+</div>
+
+<!-- ===== AYARLAR ===== -->
+<div id="overlay"></div>
+<aside id="panel">
+  <header>
+    <div class="ico"><svg viewBox="0 0 24 24"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></svg></div>
+    <div><h2>Pano &amp; Fiyat Ayarları</h2><p>Değişiklikler "Kaydet" ile ekrana anında yansır</p></div>
+    <div class="sp"></div>
+    <button class="ib sm" id="btnClose" title="Kapat"><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+  </header>
+  <div class="body">
+    <div class="card">
+      <h3>Genel Ekran Ayarları <span class="chip" id="pChip">Canlı bağlı</span></h3>
+      <label class="lbl">Dükkan adı (ekran başlığı)</label>
+      <input class="inp" type="text" id="inpShop" placeholder="Örn. Kafkas Mücevherat & Sarrafiye" maxlength="60">
+      <label class="lbl">Alt başlık / slogan</label>
+      <input class="inp" type="text" id="inpSub" placeholder="Örn. Güncel altın ve ziynet fiyat panosu" maxlength="80">
+      <label class="lbl">Görünüm modu</label>
+      <div class="seg" id="segView">
+        <button data-v="tablo">Tablo (tüm ürünler tek ekran)</button>
+        <button data-v="vitrin">Vitrin (büyük punto, sayfalı)</button>
+      </div>
+      <label class="lbl">Panel metin ölçeği</label>
+      <div class="seg" id="segFont">
+        <button data-v="kucuk">Küçük</button>
+        <button data-v="normal">Normal</button>
+        <button data-v="buyuk">Büyük (TV)</button>
+      </div>
+      <div class="g2">
+        <div>
+          <label class="lbl">Veri akış kaynağı</label>
+          <select class="inp" id="inpSource">
+            <option value="otomatik">Otomatik (Harem, kesilirse yedek)</option>
+            <option value="harem">Sadece Harem Altın (canlı)</option>
+            <option value="truncgil">Sadece yedek (truncgil, ~1 dk)</option>
+          </select>
+        </div>
+        <div>
+          <label class="lbl">Vitrin: sayfa süresi</label>
+          <select class="inp" id="inpPgSec">
+            <option value="5">5 saniye</option>
+            <option value="8">8 saniye</option>
+            <option value="12">12 saniye</option>
+            <option value="20">20 saniye</option>
+          </select>
+        </div>
+        <div>
+          <label class="lbl">Vitrin: sayfa başına ürün</label>
+          <select class="inp" id="inpPgN">
+            <option value="4">4 ürün</option>
+            <option value="5">5 ürün</option>
+            <option value="6">6 ürün</option>
+            <option value="7">7 ürün</option>
+            <option value="8">8 ürün</option>
+          </select>
+        </div>
+        <div>
+          <label class="lbl">Alt bilgi notu</label>
+          <input class="inp" type="text" id="inpNote" placeholder="Örn. Fiyatlarımıza KDV dahildir" maxlength="90">
+        </div>
+      </div>
+      <div class="toggle-row">
+        <div class="tx"><b>Değişim (gün) sütunu</b><span>Tablo görünümünde günlük kapanışa göre % değişim</span></div>
+        <label class="sw"><input type="checkbox" id="inpChg"><i></i></label>
+      </div>
+      <div class="toggle-row">
+        <div class="tx"><b>Alt bilgi çubuğu</b><span>Kaynak, son güncelleme ve notu panoda göster</span></div>
+        <label class="sw"><input type="checkbox" id="inpFooter"><i></i></label>
+      </div>
+      <div class="toggle-row" style="gap:10px">
+        <div class="tx"><b>Ayarları taşı</b><span>Komisyon ve ürün ayarlarını dosya olarak kaydet / başka cihazdan yükle</span></div>
+        <button class="btn ghost" id="btnExport" style="flex:0 0 auto;padding:9px 14px;font-size:13px">⇩ Dışa aktar</button>
+        <button class="btn ghost" id="btnImport" style="flex:0 0 auto;padding:9px 14px;font-size:13px">⇧ İçe aktar</button>
+        <input type="file" id="inpImport" accept=".json,application/json" hidden>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div><h3>Ürün &amp; Komisyon (Makas) Listesi</h3><p>Ham piyasa fiyatına eklenecek / çıkarılacak marjlar</p></div>
+      <span class="cnt" id="pCnt">0 aktif</span>
+    </div>
+    <div id="prodList"></div>
+  </div>
+  <footer>
+    <button class="btn ghost" id="btnReset">↺ &nbsp;Varsayılana Dön</button>
+    <button class="btn" id="btnSave">✓ &nbsp;Kaydet ve Panoya Uygula</button>
+  </footer>
+</aside>
+
+<script>
+(function () {
+  'use strict';
+
+  // ---------- Ürün tanımları ----------
+  const URUNLER = [
+    { id:'ALTIN',        ad:'Has Altın',      alt:'24 ayar · 0.995 saf külçe gram', kb:'24K', harem:'ALTIN',        truncgil:'gram-altin',      cur:'₺', hero:true },
+    { id:'AYAR22',       ad:'22 Ayar Bilezik', alt:'0.916 saflık · gram',            kb:'22K', harem:'AYAR22',       truncgil:'22-ayar-bilezik', cur:'₺' },
+    { id:'AYAR14',       ad:'14 Ayar Altın',  alt:'0.585 saflık · gram',            kb:'14K', harem:'AYAR14',       truncgil:'14-ayar-altin',   cur:'₺' },
+    { id:'CEYREK_YENI',  ad:'Çeyrek Altın',   alt:'1.75 gr · 22 ayar · Darphane',   kb:'ÇYT', harem:'CEYREK_YENI',  truncgil:'ceyrek-altin',    cur:'₺', yeni:true, hero:true },
+    { id:'CEYREK_ESKI',  ad:'Çeyrek Altın',   alt:'Eski basım · 1.75 gr',           kb:'ÇYT', harem:'CEYREK_ESKI',  truncgil:null,              cur:'₺', eski:true },
+    { id:'YARIM_YENI',   ad:'Yarım Altın',    alt:'3.50 gr · 22 ayar · Darphane',   kb:'YRM', harem:'YARIM_YENI',   truncgil:'yarim-altin',     cur:'₺', yeni:true },
+    { id:'YARIM_ESKI',   ad:'Yarım Altın',    alt:'Eski basım · 3.50 gr',           kb:'YRM', harem:'YARIM_ESKI',   truncgil:null,              cur:'₺', eski:true },
+    { id:'TEK_YENI',     ad:'Tam Altın',      alt:'7.00 gr · 22 ayar · Darphane',   kb:'TAM', harem:'TEK_YENI',     truncgil:'tam-altin',       cur:'₺', yeni:true },
+    { id:'TEK_ESKI',     ad:'Tam Altın',      alt:'Eski basım · 7.00 gr',           kb:'TAM', harem:'TEK_ESKI',     truncgil:null,              cur:'₺', eski:true },
+    { id:'ATA_YENI',     ad:'Ata Lira',       alt:'7.216 gr · 22 ayar · Cumhuriyet', kb:'ATA', harem:'ATA_YENI',    truncgil:'ata-altin',       cur:'₺', yeni:true },
+    { id:'ATA_ESKI',     ad:'Ata Lira',       alt:'Eski basım · 7.216 gr',          kb:'ATA', harem:'ATA_ESKI',     truncgil:null,              cur:'₺', eski:true },
+    { id:'ATA5_YENI',    ad:'Beşli Ata',      alt:'36.08 gr · 22 ayar',             kb:'5AT', harem:'ATA5_YENI',    truncgil:'besli-altin',     cur:'₺', yeni:true },
+    { id:'ATA5_ESKI',    ad:'Beşli Ata',      alt:'Eski basım · 36.08 gr',          kb:'5AT', harem:'ATA5_ESKI',    truncgil:null,              cur:'₺', eski:true },
+    { id:'GREMESE_YENI', ad:'Gremse',         alt:'17.50 gr · 22 ayar',             kb:'GRM', harem:'GREMESE_YENI', truncgil:'gremse-altin',    cur:'₺', yeni:true },
+    { id:'GREMESE_ESKI', ad:'Gremse',         alt:'Eski basım · 17.50 gr',          kb:'GRM', harem:'GREMESE_ESKI', truncgil:null,              cur:'₺', eski:true },
+    { id:'GUMUSTRY',     ad:'Gümüş',          alt:'0.999 saf · gram',               kb:'AG',  harem:'GUMUSTRY',     truncgil:'gumus',           cur:'₺', dim:true },
+    { id:'USDTRY',       ad:'Dolar',          alt:'USD / TRY · serbest piyasa',     kb:'$',   harem:'USDTRY',       truncgil:'USD',             cur:'₺', dim:true },
+    { id:'EURTRY',       ad:'Euro',           alt:'EUR / TRY · serbest piyasa',     kb:'€',   harem:'EURTRY',       truncgil:'EUR',             cur:'₺', dim:true },
+    { id:'ONS',          ad:'Ons Altın',      alt:'XAU / USD · uluslararası spot',  kb:'ONS', harem:'ONS',          truncgil:'ons',             cur:'$' },
+  ];
+  const VARSAYILAN_GORUNEN = ['ALTIN','AYAR22','AYAR14','CEYREK_YENI','CEYREK_ESKI','YARIM_YENI','YARIM_ESKI','TEK_YENI','TEK_ESKI','ATA_YENI','ATA_ESKI','GUMUSTRY','USDTRY','EURTRY','ONS'];
+
+  const LS_AYAR = 'kuyumcu_ayarlar';
+  const LS_FIYAT = 'kuyumcu_son_fiyatlar';
+  const HAREM_WS = 'wss://hrmsocketonly.haremaltin.com/socket.io/?EIO=4&transport=websocket';
+  const TRUNCGIL_URL = 'https://finans.truncgil.com/today.json';
+  const STALE_MS = 10000;
+  const TRUNCGIL_MS = 30000;
+
+  // ---------- Ayarlar ----------
+  function varsayilanAyarlar() {
+    const urunler = {};
+    URUNLER.forEach((u, i) => { urunler[u.id] = { goster: VARSAYILAN_GORUNEN.includes(u.id), sira: i, alisYuzde: 0, alisTL: 0, satisYuzde: 0, satisTL: 0 }; });
+    return { dukkanAdi: '', altBaslik: '', gorunum: 'tablo', yaziBoyutu: 'normal', kaynak: 'otomatik', altBilgi: true, degisim: true, altNot: '', sayfaSuresi: 8, sayfaBasi: 6, urunler };
+  }
+  function ayarYukle() {
+    const d = varsayilanAyarlar();
+    try {
+      const s = JSON.parse(localStorage.getItem(LS_AYAR) || 'null');
+      if (!s) return d;
+      const a = Object.assign({}, d, s, { urunler: Object.assign({}, d.urunler) });
+      Object.keys(d.urunler).forEach(id => { if (s.urunler && s.urunler[id]) a.urunler[id] = Object.assign({}, d.urunler[id], s.urunler[id]); });
+      return a;
+    } catch (e) { return d; }
+  }
+  function ayarKaydet() { try { localStorage.setItem(LS_AYAR, JSON.stringify(ayar)); } catch (e) {} }
+  let ayar = ayarYukle();
+
+  // ---------- Fiyat durumu ----------
+  let fiyat = {};   // id -> { alis, satis, kapanis, degisim, t }
+  try { fiyat = JSON.parse(localStorage.getItem(LS_FIYAT) || '{}') || {}; } catch (e) { fiyat = {}; }
+  let onceki = {};
+  let sonVeriZamani = 0, aktifKaynak = null;
+  let stale = Object.keys(fiyat).length > 0;
+
+  function num(v) {
+    if (v == null || v === '') return NaN;
+    if (typeof v === 'number') return v;
+    let s = String(v).replace(/[^\d.,-]/g, '');
+    if (s.includes(',') && s.includes('.')) s = s.replace(/\./g, '').replace(',', '.');
+    else if (s.includes(',')) s = s.replace(',', '.');
+    return parseFloat(s);
+  }
+  function fiyatKaydet() { try { localStorage.setItem(LS_FIYAT, JSON.stringify(fiyat)); } catch (e) {} }
+
+  // ---------- Harem WebSocket ----------
+  let ws = null, wsTimer = null, wsDelay = 1000;
+  function haremBaglan() {
+    if (ayar.kaynak === 'truncgil') return;
+    if (ws && (ws.readyState === 0 || ws.readyState === 1)) return;
+    try { ws = new WebSocket(HAREM_WS); } catch (e) { haremYenidenPlanla(); return; }
+    ws.onopen = () => { wsDelay = 1000; };
+    ws.onmessage = (m) => {
+      const d = String(m.data);
+      if (d[0] === '0') { ws.send('40'); return; }
+      if (d === '2') { ws.send('3'); return; }
+      if (d.startsWith('42')) {
+        let arr; try { arr = JSON.parse(d.slice(2)); } catch (e) { return; }
+        if (arr[0] !== 'price_changed' || !arr[1] || !arr[1].data) return;
+        haremIsle(arr[1].data);
+      }
+    };
+    ws.onclose = () => { ws = null; haremYenidenPlanla(); };
+    ws.onerror = () => { try { ws && ws.close(); } catch (e) {} };
+  }
+  function haremYenidenPlanla() { if (ayar.kaynak === 'truncgil') return; clearTimeout(wsTimer); wsTimer = setTimeout(haremBaglan, wsDelay); wsDelay = Math.min(wsDelay * 2, 5000); }
+  function haremKapat() { clearTimeout(wsTimer); if (ws) { try { ws.onclose = null; ws.close(); } catch (e) {} ws = null; } }
+  function haremIsle(data) {
+    let degisti = false;
+    URUNLER.forEach(u => {
+      const r = data[u.harem]; if (!r) return;
+      const a = num(r.alis), s = num(r.satis);
+      if (!isFinite(a) || !isFinite(s) || (a === 0 && s === 0)) return;
+      const k = num(r.kapanis);
+      const deg = isFinite(k) && k > 0 ? (s - k) / k * 100 : (fiyat[u.id] && fiyat[u.id].degisim);
+      fiyat[u.id] = { alis: a, satis: s, kapanis: isFinite(k) ? k : null, degisim: isFinite(deg) ? deg : null, t: Date.now() };
+      degisti = true;
+    });
+    if (degisti) { sonVeriZamani = Date.now(); aktifKaynak = 'harem'; stale = false; fiyatKaydet(); }
+  }
+
+  // ---------- Truncgil (yedek) ----------
+  let trSonDeneme = 0;
+  async function truncgilCek() {
+    if (Date.now() - trSonDeneme < 5000) return;
+    trSonDeneme = Date.now();
+    try {
+      const res = await fetch(TRUNCGIL_URL + '?_=' + Date.now(), { cache: 'no-store' });
+      const j = await res.json();
+      let degisti = false;
+      URUNLER.forEach(u => {
+        if (!u.truncgil || !j[u.truncgil]) return;
+        const a = num(j[u.truncgil]['Alış']), s = num(j[u.truncgil]['Satış']);
+        if (!isFinite(a) || !isFinite(s)) return;
+        const deg = num(j[u.truncgil]['Değişim']);
+        fiyat[u.id] = { alis: a, satis: s, kapanis: null, degisim: isFinite(deg) ? deg : null, t: Date.now() };
+        degisti = true;
+      });
+      if (degisti) { sonVeriZamani = Date.now(); aktifKaynak = 'truncgil'; stale = false; fiyatKaydet(); }
+    } catch (e) {}
+  }
+  function kaynakKontrol() {
+    const canli = Date.now() - sonVeriZamani < STALE_MS;
+    if (ayar.kaynak === 'truncgil') { if (!canli || Date.now() - trSonDeneme > TRUNCGIL_MS) truncgilCek(); return; }
+    haremBaglan();
+    if (ayar.kaynak === 'otomatik' && !canli) truncgilCek();
+    if (!canli && sonVeriZamani) stale = true;
+  }
+
+  // ---------- Hesap & format ----------
+  function hesapla(u) {
+    const f = fiyat[u.id]; if (!f) return null;
+    const k = ayar.urunler[u.id];
+    return { alis: f.alis * (1 - (k.alisYuzde || 0) / 100) - (k.alisTL || 0), satis: f.satis * (1 + (k.satisYuzde || 0) / 100) + (k.satisTL || 0), degisim: f.degisim };
+  }
+  const fmt = new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const para = v => fmt.format(v);
+  function paraSplit(v) { const s = para(v); const i = s.lastIndexOf(','); return i < 0 ? [s, ''] : [s.slice(0, i), s.slice(i)]; }
+  const $ = id => document.getElementById(id);
+  function gorunenler() { return URUNLER.filter(u => ayar.urunler[u.id].goster).sort((a, b) => ayar.urunler[a.id].sira - ayar.urunler[b.id].sira); }
+  function durum() {
+    const canli = Date.now() - sonVeriZamani < STALE_MS;
+    if (canli && aktifKaynak === 'harem') return { cls: 'ok', tx: 'Canlı · Harem Altın', src: 'Harem Altın (canlı)' };
+    if (canli && aktifKaynak === 'truncgil') return { cls: 'warn', tx: 'Yedek kaynak', src: 'truncgil.com (yedek)' };
+    if (sonVeriZamani || Object.keys(fiyat).length) return { cls: 'err', tx: 'Bağlantı yok', src: '—' };
+    return { cls: 'idle', tx: 'Bağlanıyor', src: '—' };
+  }
+  function sonGuncelleme() { let t = 0; Object.values(fiyat).forEach(f => { if (f.t > t) t = f.t; }); return t ? new Date(t).toLocaleTimeString('tr-TR') : '—'; }
+  function flashla(el, val, prev) {
+    if (prev == null || Math.abs(val - prev) < 1e-9) return 0;
+    const up = val > prev;
+    el.classList.remove('up', 'down', 'flash-up', 'flash-down'); void el.offsetWidth;
+    el.classList.add(up ? 'up' : 'down', up ? 'flash-up' : 'flash-down');
+    return up ? 1 : -1;
+  }
+
+  // ---------- TABLO görünümü ----------
+  let tCache = {};
+  function tabloKur() {
+    const box = $('tRows'); box.innerHTML = ''; tCache = {};
+    const list = gorunenler();
+    if (!list.length) { box.innerHTML = '<div class="empty">Gösterilecek ürün seçilmedi.<br>⚙ Ayarlar\'dan ürün seçin.</div>'; return; }
+    const carpan = { kucuk: .85, normal: 1, buyuk: 1.18 }[ayar.yaziBoyutu] || 1;
+    const fsVh = Math.min(70 / list.length * .5, 5.5) * carpan;
+    document.documentElement.style.setProperty('--tfs', `min(${fsVh.toFixed(2)}vh, ${(2.6 * carpan).toFixed(2)}vw)`);
+    list.forEach(u => {
+      const row = document.createElement('div'); row.className = 'trow' + (u.hero ? ' hero' : '');
+      row.innerHTML =
+        `<div class="pname"><span class="kbadge ${u.hero ? 'hi' : u.dim ? 'dim' : ''}">${u.kb}</span><div class="nm"><div class="n">${u.ad}${u.yeni ? ' (Yeni)' : u.eski ? ' (Eski)' : ''}</div><div class="a">${u.alt}</div></div></div>` +
+        `<div class="pr al"><span class="v">—</span><span class="cur">${u.cur}</span></div>` +
+        `<div class="pr sa"><span class="v">—</span><span class="cur">${u.cur}</span></div>` +
+        `<div class="chg flat"><span class="ar"></span><span class="v">—</span></div>`;
+      box.appendChild(row);
+      tCache[u.id] = { al: row.children[1], sa: row.children[2], chg: row.children[3] };
+    });
+  }
+  function tabloRender() {
+    gorunenler().forEach(u => {
+      const c = tCache[u.id], h = hesapla(u); if (!c || !h) return;
+      const p = onceki[u.id] || {};
+      c.al.querySelector('.v').textContent = para(h.alis); flashla(c.al, h.alis, p.alis);
+      c.sa.querySelector('.v').textContent = para(h.satis); flashla(c.sa, h.satis, p.satis);
+      c.al.classList.toggle('stale', stale); c.sa.classList.toggle('stale', stale);
+      if (h.degisim != null) {
+        const d = h.degisim; c.chg.className = 'chg ' + (d > 0.005 ? 'up' : d < -0.005 ? 'down' : 'flat');
+        c.chg.querySelector('.ar').textContent = d > 0.005 ? '▲' : d < -0.005 ? '▼' : '';
+        c.chg.querySelector('.v').textContent = (d > 0 ? '+' : '') + d.toFixed(2).replace('.', ',') + '%';
+      }
+    });
+    const s = durum();
+    $('tPill').className = 'pill ' + s.cls; $('tPillTx').textContent = s.tx;
+    $('tSrc').textContent = s.src; $('tUpd').textContent = sonGuncelleme();
+    $('tSys').className = 'sys ' + (s.cls === 'ok' ? '' : s.cls);
+    $('tStale').textContent = stale ? '⚠ Fiyatlar güncel olmayabilir' : '';
+    const now = new Date();
+    $('tTime').textContent = now.toLocaleTimeString('tr-TR');
+    $('tDate').textContent = now.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
+  }
+
+  // ---------- VİTRİN görünümü ----------
+  let vCache = {}, vPageIdx = 0, vPageTimer = null, vPages = [];
+  function vitrinKur() {
+    const list = gorunenler(), n = Math.max(1, ayar.sayfaBasi | 0);
+    vPages = []; for (let i = 0; i < list.length; i += n) vPages.push(list.slice(i, i + n));
+    if (!vPages.length) vPages = [[]];
+    if (vPageIdx >= vPages.length) vPageIdx = 0;
+    const carpan = { kucuk: .85, normal: 1, buyuk: 1.15 }[ayar.yaziBoyutu] || 1;
+    const fsVh = Math.min(62 / n * .42, 4.6) * carpan;
+    document.documentElement.style.setProperty('--vfs', `min(${fsVh.toFixed(2)}vh, ${(2.4 * carpan).toFixed(2)}vw)`);
+    document.documentElement.style.setProperty('--pgsec', ayar.sayfaSuresi + 's');
+    vitrinSayfaCiz();
+    clearInterval(vPageTimer);
+    if (vPages.length > 1) vPageTimer = setInterval(vitrinSonraki, ayar.sayfaSuresi * 1000);
+  }
+  function vitrinSayfaCiz() {
+    const box = $('vPage'); box.innerHTML = ''; vCache = {};
+    const page = vPages[vPageIdx] || [];
+    if (!page.length) { box.innerHTML = '<div class="empty">Gösterilecek ürün seçilmedi.<br>⚙ Ayarlar\'dan ürün seçin.</div>'; }
+    page.forEach(u => {
+      const row = document.createElement('div'); row.className = 'vrow' + (u.hero ? ' hero' : '');
+      row.innerHTML =
+        `<div class="pname"><span class="vbadge">${u.kb}</span><div class="nm"><div class="n"><span>${u.ad}</span>${u.yeni ? '<span class="yeni">YENİ</span>' : u.eski ? '<span class="yeni">ESKİ</span>' : ''}</div><div class="a">${u.alt}</div></div></div>` +
+        `<div class="pr al"><span class="int">—</span><span class="dec"></span></div>` +
+        `<div class="pr sa"><span class="ar"></span><span class="int">—</span><span class="dec"></span><span class="cur">${u.cur}</span></div>`;
+      box.appendChild(row);
+      vCache[u.id] = { al: row.children[1], sa: row.children[2] };
+    });
+    $('vPgNum').textContent = `SAYFA ${vPageIdx + 1} / ${vPages.length}`;
+    $('vPgTtl').textContent = page.length ? page.map(u => u.kb).filter((v, i, a) => a.indexOf(v) === i).join(' · ') : '—';
+    const pr = $('vProg'); pr.classList.remove('run'); void pr.offsetWidth; if (vPages.length > 1) pr.classList.add('run');
+    // sayfa değişince önceki değerleri sıfırla ki flash yapmasın
+    page.forEach(u => { const h = hesapla(u); if (h) onceki[u.id] = { alis: h.alis, satis: h.satis }; });
+    vitrinRender();
+  }
+  function vitrinSonraki() {
+    const box = $('vPage'); box.classList.add('out');
+    setTimeout(() => { vPageIdx = (vPageIdx + 1) % vPages.length; vitrinSayfaCiz(); box.classList.remove('out'); }, 600);
+  }
+  function vitrinRender() {
+    (vPages[vPageIdx] || []).forEach(u => {
+      const c = vCache[u.id], h = hesapla(u); if (!c || !h) return;
+      const p = onceki[u.id] || {};
+      let [i1, d1] = paraSplit(h.alis), [i2, d2] = paraSplit(h.satis);
+      c.al.querySelector('.int').textContent = i1; c.al.querySelector('.dec').textContent = d1;
+      c.sa.querySelector('.int').textContent = i2; c.sa.querySelector('.dec').textContent = d2;
+      flashla(c.al, h.alis, p.alis);
+      const dir = flashla(c.sa, h.satis, p.satis);
+      const ar = c.sa.querySelector('.ar');
+      if (dir) { ar.textContent = dir > 0 ? '▲' : '▼'; ar.className = 'ar ' + (dir > 0 ? 'up' : 'down'); }
+      else if (!ar.textContent && h.degisim != null) { ar.textContent = h.degisim >= 0 ? '▲' : '▼'; ar.className = 'ar ' + (h.degisim >= 0 ? 'up' : 'down'); }
+      c.al.classList.toggle('stale', stale); c.sa.classList.toggle('stale', stale);
+    });
+    const s = durum();
+    $('vPill').className = 'pill ' + s.cls; $('vPillTx').textContent = s.tx;
+    $('vSrc').textContent = s.src === '—' ? 'Kapalıçarşı & Harem' : s.src;
+    $('vUpd').textContent = sonGuncelleme();
+    $('vStale').textContent = stale ? '⚠ Fiyatlar güncel olmayabilir' : '';
+    $('vTime').textContent = new Date().toLocaleTimeString('tr-TR');
+  }
+
+  // ---------- Ortak render ----------
+  function render() {
+    if (ayar.gorunum === 'vitrin') vitrinRender(); else tabloRender();
+    gorunenler().forEach(u => { const h = hesapla(u); if (h) onceki[u.id] = { alis: h.alis, satis: h.satis }; });
+  }
+  function ayarUygula() {
+    document.body.dataset.view = ayar.gorunum;
+    document.body.dataset.degisim = ayar.degisim ? '1' : '0';
+    document.documentElement.style.setProperty('--scale', { kucuk: .88, normal: 1, buyuk: 1.12 }[ayar.yaziBoyutu] || 1);
+    $('tShop').textContent = ayar.dukkanAdi; $('vShop').textContent = ayar.dukkanAdi;
+    $('tMono').textContent = (ayar.dukkanAdi || 'A').trim().charAt(0).toLocaleUpperCase('tr-TR');
+    $('tSub').textContent = ayar.altBaslik || 'Harem Altın · Kapalıçarşı serbest piyasa';
+    $('vSub').textContent = ayar.altBaslik || 'Güncel altın ve ziynet fiyat panosu';
+    $('tNote').textContent = ayar.altNot; $('vNote').textContent = ayar.altNot;
+    $('tFoot').style.display = ayar.altBilgi ? '' : 'none';
+    document.querySelector('.vfoot').style.display = ayar.altBilgi ? '' : 'none';
+    document.title = (ayar.dukkanAdi ? ayar.dukkanAdi + ' · ' : '') + 'Canlı Altın Fiyatları';
+    onceki = {};
+    clearInterval(vPageTimer);
+    if (ayar.gorunum === 'vitrin') vitrinKur(); else tabloKur();
+    render();
+  }
+
+  // ---------- Ayarlar paneli ----------
+  let taslak = null;
+  function segSet(id, val) { document.querySelectorAll('#' + id + ' button').forEach(b => b.classList.toggle('on', b.dataset.v === val)); }
+  function segGet(id) { const b = document.querySelector('#' + id + ' button.on'); return b ? b.dataset.v : null; }
+  document.querySelectorAll('.seg').forEach(seg => seg.addEventListener('click', e => { const b = e.target.closest('button'); if (b) segSet(seg.id, b.dataset.v); }));
+
+  function panelAc() {
+    taslak = JSON.parse(JSON.stringify(ayar));
+    $('inpShop').value = taslak.dukkanAdi; $('inpSub').value = taslak.altBaslik; $('inpNote').value = taslak.altNot;
+    segSet('segView', taslak.gorunum); segSet('segFont', taslak.yaziBoyutu);
+    $('inpSource').value = taslak.kaynak; $('inpPgSec').value = String(taslak.sayfaSuresi); $('inpPgN').value = String(taslak.sayfaBasi);
+    $('inpChg').checked = !!taslak.degisim; $('inpFooter').checked = !!taslak.altBilgi;
+    urunListesiKur();
+    $('overlay').classList.add('open'); $('panel').classList.add('open');
+  }
+  function panelKapat() { $('overlay').classList.remove('open'); $('panel').classList.remove('open'); taslak = null; }
+
+  function urunListesiKur() {
+    const box = $('prodList'); box.innerHTML = '';
+    URUNLER.slice().sort((a, b) => taslak.urunler[a.id].sira - taslak.urunler[b.id].sira).forEach(u => {
+      const k = taslak.urunler[u.id];
+      const el = document.createElement('div'); el.className = 'pcard' + (k.goster ? '' : ' off'); el.dataset.id = u.id;
+      el.innerHTML =
+        `<div class="ph"><input type="checkbox" data-f="goster" ${k.goster ? 'checked' : ''}><span class="nm">${u.ad}${u.yeni ? ' (Yeni)' : u.eski ? ' (Eski)' : ''}</span><span class="kb">${u.kb}</span><span class="sp"></span><button data-mv="-1" title="Yukarı">↑</button><button data-mv="1" title="Aşağı">↓</button></div>` +
+        `<div class="kom">` +
+          `<div class="kbox al"><div class="kh"><span>Alış İskontosu</span><small>ham fiyattan düş</small></div>` +
+            `<div class="kr"><span class="sg">−</span><input type="number" step="0.01" data-f="alisYuzde" value="${k.alisYuzde}"><span class="u">%</span></div>` +
+            `<div class="kr"><span class="sg">−</span><input type="number" step="1" data-f="alisTL" value="${k.alisTL}"><span class="u">${u.cur}</span></div></div>` +
+          `<div class="kbox sa"><div class="kh"><span>Satış Marjı</span><small>ham fiyata ekle</small></div>` +
+            `<div class="kr"><span class="sg">+</span><input type="number" step="0.01" data-f="satisYuzde" value="${k.satisYuzde}"><span class="u">%</span></div>` +
+            `<div class="kr"><span class="sg">+</span><input type="number" step="1" data-f="satisTL" value="${k.satisTL}"><span class="u">${u.cur}</span></div></div>` +
+        `</div><div class="prev"></div>`;
+      box.appendChild(el);
+    });
+    onizlemeGuncelle();
+  }
+  function onizlemeGuncelle() {
+    if (!taslak) return;
+    let aktif = 0;
+    document.querySelectorAll('#prodList .pcard').forEach(el => {
+      const id = el.dataset.id, f = fiyat[id], k = taslak.urunler[id], u = URUNLER.find(x => x.id === id);
+      if (k.goster) aktif++;
+      const pv = el.querySelector('.prev');
+      if (!f) { pv.innerHTML = '<span>◌ veri bekleniyor</span>'; return; }
+      const a = f.alis * (1 - k.alisYuzde / 100) - k.alisTL, s = f.satis * (1 + k.satisYuzde / 100) + k.satisTL;
+      pv.innerHTML = `<span>Ham: <b>${para(f.alis)}</b> / <b>${para(f.satis)}</b></span><span>Alış: <b>${para(a)} ${u.cur}</b></span><span>Satış: <b class="g">${para(s)} ${u.cur}</b></span>`;
+    });
+    $('pCnt').textContent = aktif + ' aktif ürün';
+    const s = durum(); $('pChip').className = 'chip ' + (s.cls === 'ok' ? '' : s.cls); $('pChip').textContent = s.tx;
+  }
+  $('prodList').addEventListener('input', e => {
+    const el = e.target.closest('.pcard'); if (!el || !taslak) return;
+    const k = taslak.urunler[el.dataset.id], f = e.target.dataset.f; if (!f) return;
+    if (f === 'goster') { k.goster = e.target.checked; el.classList.toggle('off', !k.goster); }
+    else k[f] = parseFloat(e.target.value) || 0;
+    onizlemeGuncelle();
+  });
+  $('prodList').addEventListener('click', e => {
+    const b = e.target.closest('button[data-mv]'); if (!b || !taslak) return;
+    const id = b.closest('.pcard').dataset.id, mv = +b.dataset.mv;
+    const list = URUNLER.slice().sort((a, c) => taslak.urunler[a.id].sira - taslak.urunler[c.id].sira);
+    const i = list.findIndex(u => u.id === id), j = i + mv;
+    if (j < 0 || j >= list.length) return;
+    [list[i], list[j]] = [list[j], list[i]];
+    list.forEach((u, n) => taslak.urunler[u.id].sira = n);
+    const top = $('panel').querySelector('.body').scrollTop;
+    urunListesiKur();
+    $('panel').querySelector('.body').scrollTop = top;
+  });
+  $('btnSave').addEventListener('click', () => {
+    panelOku();
+    const eskiKaynak = ayar.kaynak;
+    ayar = taslak; ayarKaydet(); panelKapat(); ayarUygula();
+    if (eskiKaynak !== ayar.kaynak) { haremKapat(); sonVeriZamani = 0; aktifKaynak = null; trSonDeneme = 0; kaynakKontrol(); }
+  });
+  $('btnReset').addEventListener('click', () => {
+    if (!confirm('Tüm ayarlar (komisyonlar, ürün seçimi, dükkan adı) varsayılana dönecek. Emin misiniz?')) return;
+    ayar = varsayilanAyarlar(); ayarKaydet(); panelKapat(); ayarUygula();
+  });
+  $('btnClose').addEventListener('click', panelKapat);
+  $('overlay').addEventListener('click', panelKapat);
+
+  // Ayarları dışa / içe aktar (paneldeki taslak üzerinden; kaydetmek için yine "Kaydet")
+  function panelOku() {
+    taslak.dukkanAdi = $('inpShop').value.trim(); taslak.altBaslik = $('inpSub').value.trim(); taslak.altNot = $('inpNote').value.trim();
+    taslak.gorunum = segGet('segView') || 'tablo'; taslak.yaziBoyutu = segGet('segFont') || 'normal';
+    taslak.kaynak = $('inpSource').value; taslak.sayfaSuresi = +$('inpPgSec').value || 8; taslak.sayfaBasi = +$('inpPgN').value || 6;
+    taslak.degisim = $('inpChg').checked; taslak.altBilgi = $('inpFooter').checked;
+  }
+  $('btnExport').addEventListener('click', () => {
+    panelOku();
+    const blob = new Blob([JSON.stringify(taslak, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+    a.download = 'kuyumcu-ayarlar-' + new Date().toISOString().slice(0, 10) + '.json';
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  });
+  $('btnImport').addEventListener('click', () => $('inpImport').click());
+  $('inpImport').addEventListener('change', e => {
+    const f = e.target.files[0]; if (!f) return;
+    const r = new FileReader();
+    r.onload = () => {
+      try {
+        const s = JSON.parse(r.result);
+        if (!s || typeof s !== 'object' || !s.urunler) throw 0;
+        const d = varsayilanAyarlar();
+        const a = Object.assign({}, d, s, { urunler: Object.assign({}, d.urunler) });
+        Object.keys(d.urunler).forEach(id => { if (s.urunler[id]) a.urunler[id] = Object.assign({}, d.urunler[id], s.urunler[id]); });
+        const kaydedilmis = ayar; ayar = a; panelAc(); ayar = kaydedilmis; // paneli dosyadaki değerlerle doldur, Kaydet'e basınca uygulanır
+        alert('Ayarlar dosyadan yüklendi. Uygulamak için "Kaydet ve Panoya Uygula" butonuna basın.');
+      } catch (err) { alert('Dosya okunamadı: geçerli bir kuyumcu ayar dosyası değil.'); }
+      e.target.value = '';
+    };
+    r.readAsText(f);
+  });
+
+  // ---------- Tam ekran & kısayollar ----------
+  function tamEkranToggle() { if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(() => {}); else document.exitFullscreen(); }
+  document.querySelectorAll('[data-act="settings"]').forEach(b => b.addEventListener('click', panelAc));
+  document.querySelectorAll('[data-act="full"]').forEach(b => b.addEventListener('click', tamEkranToggle));
+  document.addEventListener('keydown', e => {
+    const open = $('panel').classList.contains('open');
+    if (e.key === 'Escape' && open) panelKapat();
+    else if (!open && !e.ctrlKey && !e.altKey) {
+      if (e.key.toLowerCase() === 'f') tamEkranToggle();
+      else if (e.key === 'ArrowRight' && ayar.gorunum === 'vitrin' && vPages.length > 1) { clearInterval(vPageTimer); vitrinSonraki(); vPageTimer = setInterval(vitrinSonraki, ayar.sayfaSuresi * 1000); }
+    }
+  });
+  let hideTimer = null;
+  function barlarGoster() {
+    document.querySelectorAll('.ctrls').forEach(el => el.classList.remove('hidden'));
+    clearTimeout(hideTimer);
+    if (document.fullscreenElement) hideTimer = setTimeout(() => document.querySelectorAll('.ctrls').forEach(el => el.classList.add('hidden')), 4000);
+  }
+  document.addEventListener('mousemove', barlarGoster);
+  document.addEventListener('fullscreenchange', barlarGoster);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) { wsDelay = 1000; kaynakKontrol(); } });
+  window.addEventListener('online', () => { wsDelay = 1000; kaynakKontrol(); });
+
+  // ---------- Başlat ----------
+  // URL ile geçici görünüm: index.html?view=vitrin  (kaydedilmez)
+  try { const qv = new URLSearchParams(location.search).get('view'); if (qv === 'vitrin' || qv === 'tablo') ayar.gorunum = qv; } catch (e) {}
+  ayarUygula();
+  kaynakKontrol();
+  setInterval(() => { kaynakKontrol(); render(); if (taslak) onizlemeGuncelle(); }, 1000);
+})();
+</script>
+</body>
+</html>
