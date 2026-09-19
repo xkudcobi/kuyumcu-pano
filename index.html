@@ -797,27 +797,53 @@
   function fiyatKaydet() { try { localStorage.setItem(LS_FIYAT, JSON.stringify(fiyat)); } catch (e) {} }
 
   // ---------- Harem WebSocket ----------
+  // Harem soketi yalnızca fiyat DEĞİŞİNCE mesaj yollar; durgun piyasada dakikalarca veri gelmeyebilir.
+  // Bu yüzden "canlı" sayımı veriye değil, soketin ping/pong nabzına bağlıdır (socket.io EIO=4).
   let ws = null, wsTimer = null, wsDelay = 1000;
+  let wsSonMesaj = 0, wsPingAralik = 25000, wsPingZamanAsimi = 20000;
   function haremBaglan() {
     if (ayar.kaynak === 'truncgil') return;
     if (ws && (ws.readyState === 0 || ws.readyState === 1)) return;
-    try { ws = new WebSocket(HAREM_WS); } catch (e) { haremYenidenPlanla(); return; }
-    ws.onopen = () => { wsDelay = 1000; };
-    ws.onmessage = (m) => {
+    let sock;
+    try { sock = new WebSocket(HAREM_WS); } catch (e) { haremYenidenPlanla(); return; }
+    ws = sock;
+    wsSonMesaj = Date.now();
+    sock.onopen = () => { wsDelay = 1000; wsSonMesaj = Date.now(); };
+    sock.onmessage = (m) => {
+      if (sock !== ws) return;               // eski/kapatılmış soketten gelen mesajı yoksay
+      wsSonMesaj = Date.now();
       const d = String(m.data);
-      if (d[0] === '0') { ws.send('40'); return; }
-      if (d === '2') { ws.send('3'); return; }
+      if (d[0] === '0') {                    // açılış paketi: ping süreleri burada gelir
+        try { const h = JSON.parse(d.slice(1)); if (h.pingInterval > 0) wsPingAralik = h.pingInterval; if (h.pingTimeout > 0) wsPingZamanAsimi = h.pingTimeout; } catch (e) {}
+        sock.send('40'); return;
+      }
+      if (d === '2') { sock.send('3'); return; }   // ping -> pong
       if (d.startsWith('42')) {
         let arr; try { arr = JSON.parse(d.slice(2)); } catch (e) { return; }
         if (arr[0] !== 'price_changed' || !arr[1] || !arr[1].data) return;
         haremIsle(arr[1].data);
       }
     };
-    ws.onclose = () => { ws = null; haremYenidenPlanla(); };
-    ws.onerror = () => { try { ws && ws.close(); } catch (e) {} };
+    sock.onclose = () => { if (sock !== ws) return; ws = null; haremYenidenPlanla(); };
+    sock.onerror = () => { try { sock.close(); } catch (e) {} };
   }
   function haremYenidenPlanla() { if (ayar.kaynak === 'truncgil') return; clearTimeout(wsTimer); wsTimer = setTimeout(haremBaglan, wsDelay); wsDelay = Math.min(wsDelay * 2, 5000); }
   function haremKapat() { clearTimeout(wsTimer); if (ws) { try { ws.onclose = null; ws.close(); } catch (e) {} ws = null; } }
+  // Soket açık ve son ping/pong süresi içinde nabız aldıysak bağlantı canlıdır
+  function haremCanli() { return !!ws && ws.readyState === 1 && Date.now() - wsSonMesaj < wsPingAralik + wsPingZamanAsimi + 5000; }
+  // Bekçi: "yarı ölü" soket (ağ koptu ama onclose gelmedi) ya da takılan bağlanma denemesini zorla kapatır
+  function haremBekci() {
+    if (!ws) return;
+    const gecen = Date.now() - wsSonMesaj;
+    if ((ws.readyState === 1 && gecen > wsPingAralik + wsPingZamanAsimi + 5000) || (ws.readyState === 0 && gecen > 15000)) {
+      const eski = ws; ws = null;
+      try { eski.onclose = null; eski.close(); } catch (e) {}
+      wsDelay = 1000; haremYenidenPlanla();
+    }
+  }
+  // Ağ geri gelince ya da sekme öne gelince beklemeden yeniden bağlan
+  window.addEventListener('online', () => { wsDelay = 1000; clearTimeout(wsTimer); haremBaglan(); });
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) { haremBekci(); haremBaglan(); } });
   function haremIsle(data) {
     let degisti = false;
     URUNLER.forEach(u => {
@@ -852,10 +878,16 @@
       if (degisti) { sonVeriZamani = Date.now(); aktifKaynak = 'truncgil'; stale = false; fiyatKaydet(); }
     } catch (e) {}
   }
+  // Veri canlı mı? Harem'de soket nabzı yeterlidir (fiyat değişmese de); yedek kaynakta son veri yaşına bakılır
+  function veriCanli() {
+    if (aktifKaynak === 'harem' && haremCanli()) return true;
+    return Date.now() - sonVeriZamani < STALE_MS;
+  }
   function kaynakKontrol() {
-    const canli = Date.now() - sonVeriZamani < STALE_MS;
-    if (ayar.kaynak === 'truncgil') { if (!canli || Date.now() - trSonDeneme > TRUNCGIL_MS) truncgilCek(); return; }
+    if (ayar.kaynak === 'truncgil') { if (!veriCanli() || Date.now() - trSonDeneme > TRUNCGIL_MS) truncgilCek(); return; }
+    haremBekci();
     haremBaglan();
+    const canli = veriCanli();
     if (ayar.kaynak === 'otomatik' && !canli) truncgilCek();
     if (!canli && sonVeriZamani) stale = true;
   }
@@ -920,7 +952,7 @@
   const $ = id => document.getElementById(id);
   function gorunenler() { return tumUrunler().filter(u => urunAyar(u).goster).sort((a, b) => urunAyar(a).sira - urunAyar(b).sira); }
   function durum() {
-    const canli = Date.now() - sonVeriZamani < STALE_MS;
+    const canli = veriCanli();
     if (canli && aktifKaynak === 'harem') return { cls: 'ok', tx: 'Canlı · Harem Altın', src: 'Harem Altın (canlı)' };
     if (canli && aktifKaynak === 'truncgil') return { cls: 'warn', tx: 'Yedek kaynak', src: 'truncgil.com (yedek)' };
     if (sonVeriZamani || Object.keys(fiyat).length) return { cls: 'err', tx: 'Bağlantı yok', src: '—' };
