@@ -1,6 +1,6 @@
 # Kuyumcu Canli Fiyat Panosu - yardimci arac
-# Kullanim:  powershell -ExecutionPolicy Bypass -File pano.ps1 -Islem baslat|kapat|sec|kur
-param([Parameter(Mandatory=$true)][ValidateSet('baslat','kapat','sec','kur')][string]$Islem)
+# Kullanim:  powershell -ExecutionPolicy Bypass -File pano.ps1 -Islem baslat|kapat|sec|kur|hesap
+param([Parameter(Mandatory=$true)][ValidateSet('baslat','kapat','sec','kur','hesap')][string]$Islem)
 
 $ErrorActionPreference = 'Stop'
 $Kok       = Split-Path -Parent $PSScriptRoot            # C:\kuyumcu
@@ -19,6 +19,19 @@ public static class Win {
   [DllImport("user32.dll")] public static extern bool SetWindowPos(IntPtr h, IntPtr after, int x, int y, int cx, int cy, uint flags);
   [DllImport("user32.dll")] public static extern bool ShowWindow(IntPtr h, int cmd);
   [DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr h);
+  [DllImport("user32.dll")] public static extern bool IsWindowVisible(IntPtr h);
+  [DllImport("user32.dll", CharSet=CharSet.Unicode)] public static extern int GetWindowText(IntPtr h, System.Text.StringBuilder s, int n);
+  public delegate bool EnumProc(IntPtr h, IntPtr l);
+  [DllImport("user32.dll")] public static extern bool EnumWindows(EnumProc cb, IntPtr l);
+  static IntPtr bulunan; static string aranan;
+  static bool Cb(IntPtr h, IntPtr l) {
+    if (!IsWindowVisible(h)) return true;
+    var sb = new System.Text.StringBuilder(512); GetWindowText(h, sb, 512);
+    if (sb.ToString().IndexOf(aranan, StringComparison.OrdinalIgnoreCase) >= 0) { bulunan = h; return false; }
+    return true;
+  }
+  // Basliginda verilen metin gecen ilk gorunur pencereyi bulur (tezgah penceresini yakalamak icin)
+  public static IntPtr FindByTitle(string part) { aranan = part; bulunan = IntPtr.Zero; EnumWindows(Cb, IntPtr.Zero); return bulunan; }
 }
 "@
 [void][Win]::SetProcessDPIAware()   # ekran koordinatlari gercek piksel olsun
@@ -105,7 +118,7 @@ function PanoBaslat {
     '--overscroll-history-navigation=0', '--autoplay-policy=no-user-gesture-required',
     "--window-position=$($b.X),$($b.Y)", "--window-size=$($b.Width),$($b.Height)"
   )
-  if ($cokluEkran) { $args += '--kiosk'; $args += "`"$url`"" }   # TV: tam ekran, adres cubugu yok
+  if ($cokluEkran) { $args += '--start-fullscreen'; $args += "--app=`"$url`"" }   # TV: tam ekran, adres cubugu yok (kiosk degil: tezgah penceresi ayni profilde normal acilabilsin)
   else             { $args += "--app=`"$url`"" }                   # tek ekran: normal pencere
 
   Start-Process -FilePath $exe -ArgumentList $args | Out-Null
@@ -129,6 +142,34 @@ function PanoBaslat {
   Write-Host ("Pano acildi: ekran {0} ({1}x{2}) - {3}" -f $idx, $b.Width, $b.Height, (Split-Path $exe -Leaf)) -ForegroundColor Green
 }
 
+# Tezgah hesaplayicisi: ayni tarayici profiliyle (ayarlar ortak) ayri pencerede, panonun OLMADIGI ekranda acilir
+function HesapAc {
+  if (-not (Test-Path $Sayfa)) { throw "index.html bulunamadi: $Sayfa" }
+  $exe = Tarayici
+  $liste = @(Ekranlar)
+  $panoIdx = 1
+  if (Test-Path $EkranCfg) { $t = (Get-Content $EkranCfg -Raw).Trim(); if ($t -match '^\d+$') { $panoIdx = [int]$t } }
+  $hedef = $liste | Where-Object { $_.Primary } | Select-Object -First 1
+  if ($liste.Count -gt 1 -and $panoIdx -ge 1 -and $panoIdx -le $liste.Count -and $liste[$panoIdx - 1].Primary) {
+    $hedef = $liste | Where-Object { -not $_.Primary } | Select-Object -First 1
+  }
+  if (-not $hedef) { $hedef = $liste[0] }
+  $b = $hedef.WorkingArea
+  $w = [Math]::Min(1280, $b.Width - 60); $h = [Math]::Min(880, $b.Height - 60)
+  $x = $b.X + [int](($b.Width - $w) / 2); $y = $b.Y + [int](($b.Height - $h) / 2)
+  $url = 'file:///' + ($Sayfa -replace '\\', '/') + '?view=hesap'
+  $args = @("--user-data-dir=`"$Profil`"", '--no-first-run', '--no-default-browser-check', "--window-position=$x,$y", "--window-size=$w,$h", "--app=`"$url`"")
+  Start-Process -FilePath $exe -ArgumentList $args | Out-Null
+  # Pano acik ise Chrome yeni pencereyi ayni surecte acar ve konum parametrelerini yok sayabilir -> pencereyi bulup tasi
+  $hwnd = [IntPtr]::Zero
+  for ($i = 0; $i -lt 30 -and $hwnd -eq [IntPtr]::Zero; $i++) { Start-Sleep -Milliseconds 400; $hwnd = [Win]::FindByTitle('Tezgah Hesaplay') }
+  if ($hwnd -ne [IntPtr]::Zero) {
+    [void][Win]::SetWindowPos($hwnd, [IntPtr](-2), $x, $y, $w, $h, 0x40)
+    [void][Win]::SetForegroundWindow($hwnd)
+  }
+  Write-Host ("Tezgah hesaplayici acildi ({0}x{1}). Ayarlar panoyla ortaktir." -f $w, $h) -ForegroundColor Green
+}
+
 function Kur {
   New-Item -ItemType Directory -Force -Path $AyarKlas | Out-Null
   $ws = New-Object -ComObject WScript.Shell
@@ -148,6 +189,8 @@ function Kur {
   Kisayol (Join-Path $masaustu  'Panoyu Ac.lnk')         (Join-Path $Kok 'pano-baslat.bat') 'Fiyat panosunu acar'
   Kisayol (Join-Path $masaustu  'Panoyu Kapat.lnk')      (Join-Path $Kok 'pano-kapat.bat')  'Fiyat panosunu kapatir'
   Kisayol (Join-Path $masaustu  'Pano - Ekran Sec.lnk')  (Join-Path $Kok 'ekran-sec.bat')   'Panonun hangi ekranda cikacagini secer'
+  Kisayol (Join-Path $masaustu  'Tezgah Hesaplayici.lnk') (Join-Path $Kok 'hesap-ac.bat')    'Gram gir, iscilikli fiyat / hurda alis / takas hesapla'
+  $th = $ws.CreateShortcut((Join-Path $masaustu 'Tezgah Hesaplayici.lnk')); $th.IconLocation = 'shell32.dll,21'; $th.Save()
   $ek = $ws.CreateShortcut((Join-Path $masaustu 'Pano - Ekran Sec.lnk')); $ek.WindowStyle = 1; $ek.Save()
 
   # Uyku / ekran kapanmasini kapat (prizde)
@@ -162,4 +205,5 @@ switch ($Islem) {
   'kapat'  { PanoKapat }
   'baslat' { PanoBaslat }
   'kur'    { Kur }
+  'hesap'  { HesapAc }
 }

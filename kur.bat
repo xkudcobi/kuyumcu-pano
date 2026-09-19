@@ -30,6 +30,7 @@ copy /y "%KAYNAK%index.html"        "%HEDEF%\" >nul
 copy /y "%KAYNAK%pano-baslat.bat"   "%HEDEF%\" >nul
 copy /y "%KAYNAK%pano-kapat.bat"    "%HEDEF%\" >nul
 copy /y "%KAYNAK%ekran-sec.bat"     "%HEDEF%\" >nul
+copy /y "%KAYNAK%hesap-ac.bat"      "%HEDEF%\" >nul
 copy /y "%KAYNAK%araclar\pano.ps1"  "%HEDEF%\araclar\" >nul
 if exist "%KAYNAK%KURULUM.md" copy /y "%KAYNAK%KURULUM.md" "%HEDEF%\" >nul
 echo        Tamam.
@@ -50,7 +51,8 @@ echo  ==========================================================
 echo   KURULUM TAMAMLANDI
 echo  ==========================================================
 echo   - Bilgisayar her acildiginda pano kendiliginden acilir.
-echo   - Masaustu kisayollari:  "Panoyu Ac", "Panoyu Kapat", "Pano - Ekran Sec"
+echo   - Masaustu kisayollari:  "Panoyu Ac", "Panoyu Kapat", "Pano - Ekran Sec",
+echo     "Tezgah Hesaplayici" (gram gir, iscilikli fiyat / hurda alis / takas)
 echo   - Ilk acilista panoda  (ayarlar) simgesinden dukkan adi ve
 echo     komisyonlari girin, "Kaydet" deyin. Ayarlar bu bilgisayarda kalir.
 echo   - Internet baglantisi sart (Harem Altin canli veri).

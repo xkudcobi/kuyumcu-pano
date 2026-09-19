@@ -9,6 +9,7 @@ kuyumcu\
 ├─ pano-baslat.bat     ← panoyu açar (kur.bat bunları C:\kuyumcu'ya kopyalar)
 ├─ pano-kapat.bat      ← panoyu kapatır
 ├─ ekran-sec.bat       ← pano hangi ekranda çıksın (TV / monitör)
+├─ hesap-ac.bat        ← Tezgah Hesaplayıcı'yı tezgah bilgisayarının ekranında açar
 ├─ araclar\pano.ps1    ← yardımcı script
 └─ KURULUM.md          ← bu dosya
 ```
@@ -23,10 +24,12 @@ kuyumcu\
 3. Açılan pencere ekranları listeler → TV'nin numarasını yazıp Enter (genelde 2; Enter'a basınca ana ekran olmayan otomatik seçilir).
 4. Pano TV'de tam ekran açılır. Bilgisayarın kendi ekranı serbesttir — istediğiniz programı kullanın, pano TV'de kalır.
 5. Panoda fareyi oynatınca çıkan **⚙** simgesine tıklayıp dükkan adı ve komisyonları girin → **Kaydet**.
+6. Aynı panelde **Ürün Listesi · Komisyon & İşçilik** bölümünden takılarınızı (bilezik, alyans, 14 ayar…) ayar + işçilik ile tanımlayın; işaretlediğiniz ürünler panoda gram/adet fiyatıyla görünür.
+7. Tezgahta fiyat vermek için masaüstündeki **Tezgah Hesaplayıcı** kısayolunu açın (pano TV'de kalır, hesaplayıcı bilgisayar ekranında açılır; ayarlar ortaktır).
 
 Kurulum sonrası:
 - Bilgisayar her açıldığında pano **kendiliğinden** TV'de açılır.
-- Masaüstünde 3 kısayol olur: **Panoyu Aç**, **Panoyu Kapat**, **Pano – Ekran Seç**.
+- Masaüstünde 4 kısayol olur: **Panoyu Aç**, **Panoyu Kapat**, **Pano – Ekran Seç**, **Tezgah Hesaplayıcı**.
 - Uyku ve ekran kapanma otomatik kapatılır.
 - Chrome yoksa Edge ile açılır (ikisi de yoksa Chrome kurun).
 
@@ -73,8 +76,39 @@ Ayarlar TV'nin tarayıcısında saklanır; uygulama verileri silinirse yeniden g
 
 ---
 
+## İşçilik ve Tezgah Hesaplayıcı
+
+### İşçilik nasıl hesaplanır?
+Kuyumculukta takı fiyatı **has altın** (24 ayar) gram fiyatından türetilir. Saflık **milyem** (binde) ile ölçülür:
+22 ayar = 916‰, 18 ayar = 750‰, 14 ayar = 585‰, 8 ayar = 333‰.
+
+| Adım | Formül |
+|---|---|
+| Malzeme | Gram × Has Satış × Saflık‰ / 1000 |
+| İşçilik (3 yöntemden biri) | **Milyem üzerine:** Gram × Has × İşçilik‰ / 1000 (916 + 20 = "936'dan satış") · **Gram başına TL** · **Malzemenin yüzdesi** |
+| Parça işçiliği / taş | Adet başına sabit TL (taşlı yüzük, külçe vb.) |
+| KDV (isteğe bağlı) | Sadece işçilik + taş üzerine (has ve sarrafiye KDV'den muaftır) |
+| Alış (hurda) | Gram × Has Alış × Hurda Milyemi / 1000 (22 ayar için 900–905‰ yaygındır) |
+
+Her ürün için bu değerleri ⚙ → **Ürün Listesi** bölümünde ürün kartına girersiniz. Hazır şablonlar (22 ayar bilezik, alyans, 14/18 ayar takı, taşlı yüzük, gram külçe…) örnek değerlerle gelir — **kendi işçiliğinize göre düzeltin.** Standart gramaj 0 ise panoda **gram fiyatı**, gramaj girilirse **adet fiyatı** gösterilir.
+
+İşçilik hesabının baz aldığı has fiyatı ⚙ → **İşçilik Hesap Ayarları**'ndan seçilir: ham piyasa has'ı ya da panodaki komisyonlu has. İnternet yokken **Has fiyatını elle gir** açılarak çalışılabilir.
+
+### Tezgah Hesaplayıcı (🧮 simge veya **H** tuşu)
+Sekmeler:
+- **Satış Hesabı** — ürün seç, gram gir (hızlı gram düğmeleri var), adet/indirim; malzeme, işçilik, taş, KDV dökümüyle toplam, gram fiyatı, satış milyemi ve hurda geri-alım karşılığı. "Serbest hesap" ile ayar/işçiliği anlık girebilirsiniz. Enter → satışa ekle.
+- **Alış · Hurda & Sarrafiye** — ayar seç, gram gir → hurda ödemesi; ya da çeyrek/yarım/tam alışı adetle.
+- **İşlem Özeti & Takas** — satış kalemleri eksi müşterinin verdiği altın = **müşteri öder / müşteriye ödenir**. **Teklif / Fiş yazdır** ile dükkan adı, saat, has fiyatı ve kalemleri içeren teklif çıktısı alınır (fatura yerine geçmez).
+- **Milyem Cetveli & Ters Hesap** — anlık has ile her milyemin ₺/gr karşılığı; bir takının fiyatı + gramından **kaç milyem / kaç TL işçilik** olduğunu çözer (rakip fiyatı analizi için).
+
+Tezgah bilgisayarında ayrı pencere: **hesap-ac.bat** (kurulumda masaüstü kısayolu oluşur). Aynı tarayıcı profilini kullandığı için pano ve hesaplayıcı **aynı ayarları** paylaşır; birinde Kaydet'e basılınca diğeri anında güncellenir. Elle açmak için adres: `index.html?view=hesap`.
+
+> Not: Bu sürümde pano `--kiosk` yerine `--start-fullscreen` ile açılır (görünüm aynı: adres çubuğu yok, tam ekran). Sebep: kiosk modu tüm tarayıcıyı kilitlediği için tezgah penceresi ayrı açılamıyordu.
+
+---
+
 ## Her iki senaryoda ortak
 - **İnternet şart.** Kablolu (Ethernet) bağlantı Wi-Fi'dan daha stabildir.
 - Veri kaynağı: Harem Altın canlı akışı; kesilirse otomatik yedek kaynağa (truncgil, ~1 dk gecikmeli) geçer ve sarı uyarı gösterir.
-- Klavye kısayolları: **F** tam ekran, **→** vitrin modunda sonraki sayfa, **Esc** ayarları kapat.
+- Klavye kısayolları: **F** tam ekran, **H** tezgah hesaplayıcı, **→** vitrin modunda sonraki sayfa, **Esc** ayarları/hesaplayıcıyı kapat.
 - Aynı adresi `?view=vitrin` ekiyle açarsanız ayarı değiştirmeden vitrin görünümü gelir (iki TV'de farklı mod için).

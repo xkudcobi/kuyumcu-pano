@@ -92,6 +92,7 @@
   .trow .nm { min-width: 0; }
   .trow .nm .n { font-size: var(--tfs); font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.15; }
   .trow.hero .nm .n { color: var(--gold2); }
+  .trow .nm .n .tisc { display: inline-block; vertical-align: middle; margin-left: .6em; font-size: .38em; font-weight: 700; letter-spacing: .06em; color: #f4b28a; background: rgba(244,178,138,.14); border: 1px solid rgba(244,178,138,.35); border-radius: .3vw; padding: .15em .6em; }
   .trow .nm .a { font-size: calc(var(--tfs) * .5); color: var(--muted); margin-top: .2vh; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .trow .pr { text-align: right; font-family: var(--mono); font-variant-numeric: tabular-nums; font-weight: 600; font-size: var(--tfs); color: var(--text); white-space: nowrap; border-radius: .3vw; padding: .3vh .5vw; transition: color .4s; }
   .trow .pr .cur { font-size: .55em; color: var(--gold-muted); margin-left: .35em; font-weight: 500; }
@@ -231,7 +232,141 @@
   .btn.ghost { flex: 1; background: rgba(212,175,55,.06); color: var(--text2); border: 1px solid rgba(212,175,55,.2); font-weight: 500; }
   .btn.ghost:hover { color: var(--gold2); box-shadow: none; }
   .ib.sm { width: 34px; height: 34px; border-radius: 6px; background: var(--s); }
+
+  /* ==================== İŞÇİLİKLİ ÜRÜN KARTLARI (panel) ==================== */
+  .pcard.isc { border-color: rgba(244,178,138,.22); }
+  .pcard .ph .kb.isc { color: #f4b28a; background: rgba(244,178,138,.12); }
+  .pcard .ph input.nmi { flex: 1; min-width: 0; background: transparent; border: none; border-bottom: 1px solid rgba(255,255,255,.1); color: var(--text); font-family: var(--sans); font-size: 16px; font-weight: 600; padding: 2px 4px; outline: none; }
+  .pcard .ph input.nmi:focus { border-bottom-color: var(--gold); }
+  .pcard .ph button.del { color: #ffb4ab; }
+  .pcard .ph button.del:hover { border-color: var(--down); color: var(--down); }
+  .ifields { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 8px 10px; }
+  .ifields .f label { display: block; font-size: 10.5px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 3px; }
+  .ifields .f .inp, .ifields .f select.inp { padding: 8px 10px; font-size: 14px; }
+  .ifields .f input.inp[type=number] { font-family: var(--mono); text-align: right; }
+  .ifields .f.w2 { grid-column: span 2; } .ifields .f.w3 { grid-column: span 3; }
+  .ifields .row { display: flex; gap: 6px; align-items: center; }
+  .ifields .row .inp { flex: 1; min-width: 0; }
+  .ifields .row .u { color: var(--muted); font-family: var(--mono); font-size: 11.5px; min-width: 30px; }
+  .mini-seg { display: flex; background: var(--s-lowest); border-radius: 8px; padding: 3px; gap: 3px; }
+  .mini-seg button { flex: 1; background: transparent; border: none; color: var(--muted); font-family: var(--sans); font-size: 12px; font-weight: 600; padding: 8px 4px; border-radius: 6px; cursor: pointer; white-space: nowrap; }
+  .mini-seg button.on { background: var(--s-high); color: var(--text); }
+  .chk { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text2); cursor: pointer; padding-top: 6px; }
+  .chk input { width: 18px; height: 18px; accent-color: var(--gold2); }
+  .help { background: var(--s-lowest); border-radius: 8px; padding: 12px 14px; font-size: 13px; color: var(--text2); line-height: 1.55; margin-top: 14px; }
+  .help summary { cursor: pointer; font-weight: 600; color: var(--gold2); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; }
+  .help code { font-family: var(--mono); color: var(--gold3); font-size: 12px; background: rgba(212,175,55,.08); padding: 1px 5px; border-radius: 4px; }
+  .help ul { margin: 8px 0 0; padding-left: 18px; } .help li { margin-bottom: 6px; } .help b { color: var(--text); }
+  .addrow { display: flex; gap: 8px; margin: 0 0 12px; }
+  .addrow select { flex: 1; }
+  .addrow .btn { flex: 0 0 auto; padding: 10px 14px; font-size: 13px; }
+  .hurda-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 8px; }
+  .hurda-grid .f label { display: block; font-size: 10.5px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 3px; }
+  .hurda-grid .f .inp { padding: 8px 10px; font-size: 14px; font-family: var(--mono); text-align: right; }
+  .kbadge.isc { background: rgba(244,178,138,.18); color: #f4b28a; }
+  .vbadge.isc { border-color: rgba(244,178,138,.4); color: #f4b28a; }
+
+  /* ==================== TEZGAH HESAPLAYICI ==================== */
+  #hesap { position: fixed; inset: 0; z-index: 12; background: #0b0f17; display: none; flex-direction: column; font-size: 15px; user-select: text; color: var(--text); }
+  #hesap.open { display: flex; }
+  #hesap > header { display: flex; align-items: center; gap: 14px; padding: 12px 22px; border-bottom: 1px solid var(--line); background: var(--s-lowest); flex-wrap: wrap; }
+  #hesap > header .ico { width: 42px; height: 42px; border-radius: 9px; background: var(--s); display: flex; align-items: center; justify-content: center; color: var(--gold2); flex: 0 0 auto; }
+  #hesap > header .ico svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  #hesap > header h2 { margin: 0; font-size: 19px; font-weight: 600; }
+  #hesap > header p { margin: 2px 0 0; font-size: 12px; color: var(--muted); max-width: 520px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  #hesap > header .sp { flex: 1; }
+  #hesap > header .pill { font-size: 11px; padding: 6px 12px; gap: 7px; } #hesap > header .pill .dot { width: 8px; height: 8px; }
+  .hc { display: flex; flex-direction: column; align-items: flex-end; background: var(--s); padding: 6px 14px; border-radius: 8px; min-width: 128px; }
+  .hc span { font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+  .hc b { font-family: var(--mono); font-size: 18px; color: var(--text); font-weight: 700; }
+  .hc.sa b { color: var(--gold2); }
+  .htabs { display: flex; gap: 4px; padding: 8px 22px 0; background: var(--s-lowest); border-bottom: 1px solid var(--line); overflow-x: auto; }
+  .htabs button { background: transparent; border: none; color: var(--muted); font-family: var(--sans); font-size: 14px; font-weight: 600; padding: 12px 18px; border-radius: 8px 8px 0 0; cursor: pointer; border-bottom: 2px solid transparent; display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; }
+  .htabs button:hover { color: var(--text2); }
+  .htabs button.on { color: var(--gold2); border-bottom-color: var(--gold2); background: var(--s-low); }
+  .htabs .badge { font-family: var(--mono); font-size: 11px; background: var(--s-high); color: var(--text); padding: 1px 7px; border-radius: 999px; }
+  .htabs .badge.pop { animation: pop .45s ease-out; }
+  @keyframes pop { 0% { background: var(--gold2); color: var(--on-gold); } 100% { } }
+  .hbody { flex: 1; overflow-y: auto; padding: 20px 22px 28px; scrollbar-width: thin; scrollbar-color: var(--s-highest) transparent; }
+  .hsec { display: none; } .hsec.on { display: block; }
+  .hgrid { display: grid; grid-template-columns: minmax(0,1.25fr) minmax(0,1fr); gap: 20px; max-width: 1400px; margin: 0 auto; align-items: start; }
+  @media (max-width: 900px) { .hgrid { grid-template-columns: 1fr; } }
+  .hlbl { font-size: 11px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--gold2); margin: 0 0 10px; }
+  .hprods { display: grid; grid-template-columns: repeat(auto-fill, minmax(168px,1fr)); gap: 8px; margin-bottom: 8px; }
+  .hprods button { background: var(--s-low); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; text-align: left; color: var(--text); cursor: pointer; font-family: var(--sans); transition: border .15s, background .15s; min-width: 0; }
+  .hprods button:hover { border-color: var(--line2); }
+  .hprods button.on { border-color: var(--gold2); background: rgba(242,202,80,.08); box-shadow: 0 0 0 1px var(--gold2) inset; }
+  .hprods button .n { display: block; font-weight: 600; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .hprods button .a { display: block; font-size: 11.5px; color: var(--muted); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .hprods button .p { display: block; font-family: var(--mono); font-size: 13px; color: var(--gold2); margin-top: 5px; font-weight: 600; }
+  .hprods button.serbest { border-style: dashed; }
+  .hcustom { background: var(--s-low); border: 1px dashed var(--line2); border-radius: 10px; padding: 12px; margin-top: 6px; }
+  .hin { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 10px; margin-top: 12px; }
+  .hin .f label { display: block; font-size: 10.5px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+  .hin .f.w2 { grid-column: span 2; }
+  .hin .f .row { display: flex; align-items: center; gap: 6px; }
+  .hin .f .row .inp { flex: 1; min-width: 0; font-family: var(--mono); font-size: 20px; font-weight: 600; text-align: right; padding: 10px 12px; }
+  .hin .f .row select.inp { font-family: var(--sans); font-size: 15px; font-weight: 500; text-align: left; }
+  .hin .f.big .row .inp { font-size: 30px; padding: 11px 14px; color: var(--gold2); }
+  .hin .f .row .u { color: var(--muted); font-family: var(--mono); font-size: 13px; min-width: 22px; }
+  #hesap input[type=number], .ifields input[type=number], .hurda-grid input[type=number] { -moz-appearance: textfield; appearance: textfield; }
+  #hesap input[type=number]::-webkit-inner-spin-button, #hesap input[type=number]::-webkit-outer-spin-button, .ifields input::-webkit-inner-spin-button, .hurda-grid input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  .stp { width: 44px; height: 50px; flex: 0 0 auto; background: var(--s); border: 1px solid rgba(255,255,255,.08); border-radius: 8px; color: var(--text); font-size: 20px; cursor: pointer; }
+  .stp:hover { color: var(--gold2); border-color: var(--gold); }
+  .hquick { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+  .hquick button { background: var(--s); border: 1px solid rgba(255,255,255,.06); border-radius: 999px; color: var(--text2); font-family: var(--mono); font-size: 13px; padding: 6px 12px; cursor: pointer; }
+  .hquick button:hover { color: var(--gold2); border-color: var(--gold); }
+  .hres { background: var(--s-low); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; }
+  .hres .rt { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding-bottom: 10px; border-bottom: 1px solid var(--line); margin-bottom: 8px; }
+  .hres .rt span { font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 600; white-space: nowrap; }
+  .hres .rt b { font-size: 15px; font-weight: 600; color: var(--text); text-align: right; }
+  .hres .rl { display: flex; justify-content: space-between; gap: 12px; padding: 6px 0; font-size: 14px; color: var(--text2); }
+  .hres .rl b { font-family: var(--mono); font-weight: 600; color: var(--text); white-space: nowrap; }
+  .hres .rl.neg b { color: #ffb4ab; }
+  .hres .rl.sub { font-size: 12.5px; color: var(--muted); padding: 4px 0 0; }
+  .hres .rtot { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-top: 10px; padding-top: 12px; border-top: 1px solid var(--line2); }
+  .hres .rtot span { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--gold2); font-weight: 700; }
+  .hres .rtot b { font-family: var(--mono); font-size: 34px; font-weight: 700; color: var(--gold2); letter-spacing: -.01em; white-space: nowrap; }
+  .hres .rtot b small { font-size: .5em; color: var(--gold-muted); margin-left: 4px; }
+  .hres .rmeta { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 10px; font-size: 12px; color: var(--muted); }
+  .hres .rmeta b { font-family: var(--mono); color: var(--text2); }
+  .hres .empty2 { color: var(--muted); text-align: center; padding: 30px 0; font-size: 14px; line-height: 1.6; }
+  .hbtns { display: flex; gap: 10px; margin-top: 12px; }
+  .hlist { display: flex; flex-direction: column; gap: 6px; }
+  .hlist .li { display: grid; grid-template-columns: minmax(0,1fr) auto auto; gap: 10px; align-items: center; background: var(--s-low); border: 1px solid var(--line); border-radius: 8px; padding: 9px 12px; }
+  .hlist .li .n { font-weight: 600; font-size: 14px; } .hlist .li .d { font-size: 12px; color: var(--muted); }
+  .hlist .li .t { font-family: var(--mono); font-weight: 600; font-size: 15px; white-space: nowrap; }
+  .hlist .li.alis .t { color: #ffb4ab; } .hlist .li.satis .t { color: #58e7aa; }
+  .hlist .li button { width: 28px; height: 28px; background: transparent; border: 1px solid rgba(255,255,255,.08); border-radius: 6px; color: var(--muted); cursor: pointer; }
+  .hlist .li button:hover { color: var(--down); border-color: var(--down); }
+  .hlist .bos { color: var(--muted); font-size: 13px; padding: 10px 0; }
+  .mtable { display: grid; grid-template-columns: auto minmax(0,1fr) auto auto; gap: 1px; background: var(--line); border-radius: 8px; overflow: hidden; font-size: 13.5px; margin-top: 12px; }
+  .mtable > div { background: var(--s-low); padding: 7px 12px; font-family: var(--mono); text-align: right; display: flex; justify-content: flex-end; align-items: center; gap: 6px; min-width: 0; }
+  .mtable > div.h { background: var(--s); color: var(--muted); font-family: var(--sans); font-size: 10.5px; text-transform: uppercase; letter-spacing: .08em; font-weight: 600; }
+  .mtable > div.m { color: var(--gold2); font-weight: 700; justify-content: flex-start; }
+  .mtable > div.d { justify-content: flex-start; color: var(--muted); font-family: var(--sans); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; line-height: 1.6; }
+  .mtable > div.s { color: var(--text); font-weight: 600; }
+  .mtable > div.a { color: var(--text2); }
+  .mtable > div.std { background: rgba(242,202,80,.06); }
+  .mtable button { background: transparent; border: none; color: var(--muted); cursor: pointer; font-size: 12px; padding: 0 2px; }
+  .mtable button:hover { color: var(--down); }
+  #fis { display: none; }
+  @media print {
+    @page { margin: 12mm; }
+    html, body { height: auto; overflow: visible; background: #fff; color: #000; }
+    body > *:not(#fis) { display: none !important; }
+    #fis { display: block; font-family: Arial, Helvetica, sans-serif; color: #000; font-size: 12pt; }
+    #fis h1 { font-size: 18pt; margin: 0 0 2mm; } #fis .m { color: #444; font-size: 10pt; margin-bottom: 6mm; }
+    #fis table { width: 100%; border-collapse: collapse; margin-bottom: 4mm; }
+    #fis th { text-align: left; border-bottom: 1px solid #000; padding: 2mm 1mm; font-size: 10pt; }
+    #fis td { padding: 2mm 1mm; border-bottom: 1px solid #ccc; vertical-align: top; }
+    #fis td small { color: #555; font-size: 9pt; }
+    #fis td.r, #fis th.r { text-align: right; white-space: nowrap; }
+    #fis .tot td { border-bottom: none; font-weight: bold; font-size: 13pt; padding-top: 4mm; }
+    #fis .note { margin-top: 8mm; font-size: 9pt; color: #444; line-height: 1.5; }
+  }
 </style>
+
 </head>
 <body data-view="tablo" data-degisim="1">
 <div class="glow1"></div><div class="glow2"></div>
@@ -253,6 +388,7 @@
         <div class="pill idle" id="tPill"><span class="dot"></span><span id="tPillTx">Bağlanıyor</span></div>
         <div class="clockbox"><span class="t" id="tTime">--:--:--</span><span class="d" id="tDate"></span></div>
         <div class="ctrls">
+          <button class="ib" data-act="hesap" title="Tezgah hesaplayıcı (H)"><svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 6h8M8 11h2M14 11h2M8 15h2M14 15h2M8 19h2M14 19h2"/></svg></button>
           <button class="ib" data-act="settings" title="Ayarlar ve komisyon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
           <button class="ib primary" data-act="full" title="Tam ekran (F)"><svg viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/></svg></button>
         </div>
@@ -290,6 +426,7 @@
       <p id="vSub">Güncel altın ve ziynet fiyat panosu</p>
       <div class="vctrls hidebar">
         <div class="ctrls">
+          <button class="ib" data-act="hesap" title="Tezgah hesaplayıcı (H)"><svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 6h8M8 11h2M14 11h2M8 15h2M14 15h2M8 19h2M14 19h2"/></svg></button>
           <button class="ib" data-act="settings" title="Ayarlar ve komisyon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
           <button class="ib primary" data-act="full" title="Tam ekran (F)"><svg viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/></svg></button>
         </div>
@@ -394,9 +531,51 @@
       </div>
     </div>
 
+    <div class="card">
+      <h3>İşçilik Hesap Ayarları <span class="chip" id="pHasChip">Has: —</span></h3>
+      <div class="g2">
+        <div>
+          <label class="lbl">İşçilik hesabında baz has fiyatı</label>
+          <select class="inp" id="inpIscBaz">
+            <option value="ham">Ham piyasa has fiyatı (Harem)</option>
+            <option value="pano">Panodaki komisyonlu has fiyatı</option>
+          </select>
+        </div>
+        <div>
+          <label class="lbl">KDV oranı (işçilik için, %)</label>
+          <input class="inp" type="number" id="inpKdv" step="1" min="0" max="100">
+        </div>
+      </div>
+      <div class="toggle-row">
+        <div class="tx"><b>Has fiyatını elle gir</b><span>İnternet yokken veya farklı bir has baz alınacaksa; tüm işçilikli ürünler bu fiyattan hesaplanır</span></div>
+        <label class="sw"><input type="checkbox" id="inpHasElle"><i></i></label>
+      </div>
+      <div class="g2" id="hasElleBox" style="margin-top:10px">
+        <div><label class="lbl" style="margin-top:0">Has alış (₺/gr)</label><input class="inp" type="number" id="inpHasA" step="1" min="0" placeholder="Örn. 4200"></div>
+        <div><label class="lbl" style="margin-top:0">Has satış (₺/gr)</label><input class="inp" type="number" id="inpHasS" step="1" min="0" placeholder="Örn. 4250"></div>
+      </div>
+      <label class="lbl">Hurda alış milyemleri (müşteriden alım · ‰) — Tezgah hesaplayıcının Alış sekmesinde kullanılır</label>
+      <div class="hurda-grid" id="hurdaGrid"></div>
+      <details class="help">
+        <summary>İşçilik nasıl hesaplanır? (kısa rehber)</summary>
+        <ul>
+          <li>Kuyumculukta her takının fiyatı <b>has altın</b> (24 ayar) gram fiyatından türetilir. Saflık <b>milyem</b> (binde) ile ölçülür: 22 ayar = 916‰, 18 ayar = 750‰, 14 ayar = 585‰, 8 ayar = 333‰.</li>
+          <li><code>Malzeme = Gram × Has Satış × Saflık‰ / 1000</code></li>
+          <li>İşçilik üç yoldan eklenir: <b>Milyem üzerine</b> (Kapalıçarşı usulü — 916 + 20 = 936‰ "satış milyemi"), <b>gram başına TL</b>, ya da <b>malzemenin yüzdesi</b> (14 ayar / markalı takıda yaygın).</li>
+          <li>Taşlı ya da standart gramajlı ürünlerde ayrıca <b>parça işçiliği</b> ve <b>taş bedeli</b> eklenir. İşçiliğe KDV uygulayan işletmeler için KDV seçeneği vardır (has altın ve sarrafiye KDV'den muaftır).</li>
+          <li><b>Alış (hurda):</b> <code>Gram × Has Alış × Hurda Milyemi / 1000</code>. 22 ayar bileziği 900–905‰, 14 ayarı 550–560‰ civarında almak yaygındır; kendi değerlerinizi girin.</li>
+          <li>Panoda: standart gramaj <b>0</b> ise ürünün <b>gram fiyatı</b> (parça işçiliği ve taş hariç), gramaj girilirse <b>adet fiyatı</b> gösterilir. Tezgah hesaplayıcı (🧮 simge veya <b>H</b> tuşu) gram girilince tam fiyatı ve dökümünü verir.</li>
+        </ul>
+      </details>
+    </div>
+
     <div class="sec">
-      <div><h3>Ürün &amp; Komisyon (Makas) Listesi</h3><p>Ham piyasa fiyatına eklenecek / çıkarılacak marjlar</p></div>
+      <div><h3>Ürün Listesi · Komisyon &amp; İşçilik</h3><p>Sarrafiyeye marj, takıya ayar + işçilik tanımlayın; sıra panoya aynen yansır</p></div>
       <span class="cnt" id="pCnt">0 aktif</span>
+    </div>
+    <div class="addrow">
+      <select class="inp" id="selSablon"></select>
+      <button class="btn ghost" id="btnIscEkle">＋ İşçilikli ürün ekle</button>
     </div>
     <div id="prodList"></div>
   </div>
@@ -405,6 +584,118 @@
     <button class="btn" id="btnSave">✓ &nbsp;Kaydet ve Panoya Uygula</button>
   </footer>
 </aside>
+
+
+<!-- ===== TEZGAH HESAPLAYICI ===== -->
+<div id="hesap">
+  <header>
+    <div class="ico"><svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 6h8M8 11h2M14 11h2M8 15h2M14 15h2M8 19h2M14 19h2"/></svg></div>
+    <div style="min-width:0"><h2>Tezgah Hesaplayıcı</h2><p id="hShop"></p></div>
+    <div class="sp"></div>
+    <div class="hc"><span>Has alış</span><b id="hHasA">—</b></div>
+    <div class="hc sa"><span>Has satış</span><b id="hHasS">—</b></div>
+    <div class="pill idle" id="hPill"><span class="dot"></span><span id="hPillTx">Bağlanıyor</span></div>
+    <button class="ib sm" id="hClose" title="Kapat (Esc)"><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+  </header>
+  <nav class="htabs">
+    <button data-t="satis" class="on">Satış Hesabı</button>
+    <button data-t="alis">Alış · Hurda &amp; Sarrafiye</button>
+    <button data-t="sepet">İşlem Özeti &amp; Takas <span class="badge" id="hSepetN">0</span></button>
+    <button data-t="milyem">Milyem Cetveli &amp; Ters Hesap</button>
+  </nav>
+  <div class="hbody">
+
+    <section class="hsec on" data-t="satis">
+      <div class="hgrid">
+        <div>
+          <div class="hlbl">Ürün seç</div>
+          <div class="hprods" id="hProds"></div>
+          <div class="hcustom" id="hSerbestBox" hidden>
+            <div class="ifields">
+              <div class="f"><label>Ayar (saflık)</label><select class="inp" id="hsAyar"></select></div>
+              <div class="f w2"><label>İşçilik yöntemi</label><div class="mini-seg" id="hsYontem"><button data-v="milyem">‰ Milyem üzerine</button><button data-v="gramTL">₺ Gram başına</button><button data-v="yuzde">% Malzeme yüzdesi</button></div></div>
+              <div class="f"><label>İşçilik</label><div class="row"><input class="inp" type="number" id="hsDeger" step="0.01" min="0"><span class="u" id="hsDegerU">‰</span></div></div>
+              <div class="f"><label>Parça işçiliği</label><div class="row"><input class="inp" type="number" id="hsAdetTL" step="1" min="0"><span class="u">₺/ad</span></div></div>
+              <div class="f"><label>Taş / aksesuar</label><div class="row"><input class="inp" type="number" id="hsTas" step="1" min="0"><span class="u">₺/ad</span></div></div>
+              <div class="f w3"><label class="chk"><input type="checkbox" id="hsKdv"> İşçilik ve taş bedeline KDV ekle</label></div>
+            </div>
+          </div>
+          <div class="hin">
+            <div class="f big"><label>Gram</label><div class="row"><input class="inp" type="number" id="hGram" step="0.01" min="0" inputmode="decimal" placeholder="0,00" autocomplete="off"><span class="u">gr</span></div></div>
+            <div class="f"><label>Adet</label><div class="row"><button class="stp" data-stp="-1">−</button><input class="inp" type="number" id="hAdet" value="1" min="1" step="1"><button class="stp" data-stp="1">+</button></div></div>
+            <div class="f"><label>İndirim</label><div class="row"><input class="inp" type="number" id="hInd" step="1" min="0" placeholder="0"><span class="u">₺</span></div></div>
+          </div>
+          <div class="hquick" id="hQuick"></div>
+        </div>
+        <div>
+          <div class="hres" id="hRes"></div>
+          <div class="hbtns"><button class="btn ghost" id="hTemizle">Temizle</button><button class="btn" id="hEkle">＋ Satışa ekle (Enter)</button></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="hsec" data-t="alis">
+      <div class="hgrid">
+        <div>
+          <div class="hlbl">Hurda / takı alışı — ayar seç</div>
+          <div class="hprods" id="hHurdaBtns"></div>
+          <div class="hin">
+            <div class="f big"><label>Gram</label><div class="row"><input class="inp" type="number" id="haGram" step="0.01" min="0" inputmode="decimal" placeholder="0,00" autocomplete="off"><span class="u">gr</span></div></div>
+            <div class="f"><label>Alış milyemi</label><div class="row"><input class="inp" type="number" id="haMilyem" step="1" min="0" max="1000"><span class="u">‰</span></div></div>
+            <div class="f"><label>Ek kesinti</label><div class="row"><input class="inp" type="number" id="haKes" step="1" min="0" placeholder="0"><span class="u">₺/gr</span></div></div>
+          </div>
+          <div class="hlbl" style="margin-top:22px">Sarrafiye alışı (çeyrek, yarım, tam…) — panodaki alış fiyatıyla</div>
+          <div class="hin">
+            <div class="f w2"><label>Ürün</label><div class="row"><select class="inp" id="haSarr"></select></div></div>
+            <div class="f"><label>Adet</label><div class="row"><input class="inp" type="number" id="haSarrAdet" value="1" min="1" step="1"></div></div>
+          </div>
+        </div>
+        <div>
+          <div class="hres" id="haRes"></div>
+          <div class="hbtns"><button class="btn" id="haEkle">＋ Hurdayı alışa ekle</button><button class="btn ghost" id="haSarrEkle">＋ Sarrafiyeyi ekle</button></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="hsec" data-t="sepet">
+      <div class="hgrid">
+        <div>
+          <div class="hlbl">Satış · müşteri alıyor</div>
+          <div class="hlist" id="hListS"></div>
+          <div class="hlbl" style="margin-top:22px">Alış / takas · müşteri veriyor</div>
+          <div class="hlist" id="hListA"></div>
+        </div>
+        <div>
+          <div class="hres" id="hOzet"></div>
+          <div class="hbtns"><button class="btn ghost" id="hSepetTemizle">Temizle</button><button class="btn" id="hYazdir">🖨 Teklif / Fiş yazdır</button></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="hsec" data-t="milyem">
+      <div class="hgrid">
+        <div>
+          <div class="hlbl">Milyem cetveli · anlık has fiyatıyla ₺/gr</div>
+          <div class="hin" style="margin-top:0">
+            <div class="f w2"><label>Özel milyem ekle (örn. 938)</label><div class="row"><input class="inp" type="number" id="hmOzel" step="1" min="1" max="1000" placeholder="938"><button class="btn ghost" id="hmEkle" style="flex:0 0 auto;padding:10px 16px">Ekle</button></div></div>
+          </div>
+          <div class="mtable" id="hMilyemTbl"></div>
+        </div>
+        <div>
+          <div class="hlbl">Fiyattan işçilik bul · ters hesap</div>
+          <div class="hin" style="margin-top:0">
+            <div class="f"><label>Satış fiyatı</label><div class="row"><input class="inp" type="number" id="htFiyat" step="1" min="0" placeholder="0"><span class="u">₺</span></div></div>
+            <div class="f"><label>Gram</label><div class="row"><input class="inp" type="number" id="htGram" step="0.01" min="0" placeholder="0,00"><span class="u">gr</span></div></div>
+            <div class="f"><label>Ayar</label><div class="row"><select class="inp" id="htAyar"></select></div></div>
+          </div>
+          <div class="hres" id="htRes" style="margin-top:12px"></div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</div>
+<div id="fis"></div>
 
 <script>
 (function () {
@@ -441,21 +732,49 @@
   const STALE_MS = 10000;
   const TRUNCGIL_MS = 30000;
 
+  // ---------- İşçilikli (takı) ürünler ----------
+  // Saflık ve işçilik "milyem" (binde) ile ölçülür: 22 ayar = 916‰. Fiyat = gram × has × milyem / 1000.
+  const AYARLAR = [
+    { k:'24K', m:995, ad:'24 Ayar' }, { k:'22K', m:916, ad:'22 Ayar' }, { k:'21K', m:875, ad:'21 Ayar' },
+    { k:'18K', m:750, ad:'18 Ayar' }, { k:'14K', m:585, ad:'14 Ayar' }, { k:'9K',  m:375, ad:'9 Ayar' },  { k:'8K',  m:333, ad:'8 Ayar' },
+  ];
+  const HURDA_VARSAYILAN = { 995: 985, 916: 900, 875: 855, 750: 725, 585: 555, 375: 350, 333: 300 };   // müşteriden alım milyemleri (örnek)
+  const ISCILIK_SABLON = [   // örnek değerler — dükkan kendi işçiliğini girer
+    { ad:'22 Ayar Bilezik',           alt:'Düz / burma bilezik',          ayar:916, yontem:'milyem', deger:20, adetTL:0,   tasTL:0,   kdv:false, alisMilyem:905, alisTL:0, gram:0 },
+    { ad:'22 Ayar İşçilikli Bilezik', alt:'Ajda / kırma / hasır',         ayar:916, yontem:'milyem', deger:45, adetTL:0,   tasTL:0,   kdv:false, alisMilyem:905, alisTL:0, gram:0 },
+    { ad:'22 Ayar Alyans',            alt:'Gram fiyatı',                  ayar:916, yontem:'milyem', deger:30, adetTL:0,   tasTL:0,   kdv:false, alisMilyem:905, alisTL:0, gram:0 },
+    { ad:'18 Ayar Takı',              alt:'Yüzük · kolye · küpe',         ayar:750, yontem:'milyem', deger:70, adetTL:0,   tasTL:0,   kdv:false, alisMilyem:725, alisTL:0, gram:0 },
+    { ad:'14 Ayar Takı',              alt:'Yüzük · kolye · küpe',         ayar:585, yontem:'milyem', deger:90, adetTL:0,   tasTL:0,   kdv:false, alisMilyem:555, alisTL:0, gram:0 },
+    { ad:'14 Ayar Alyans',            alt:'Gram fiyatı · yüzde işçilik',  ayar:585, yontem:'yuzde',  deger:25, adetTL:0,   tasTL:0,   kdv:false, alisMilyem:555, alisTL:0, gram:0 },
+    { ad:'14 Ayar Taşlı Yüzük',       alt:'Zirkon taşlı',                 ayar:585, yontem:'milyem', deger:90, adetTL:0,   tasTL:250, kdv:false, alisMilyem:555, alisTL:0, gram:0 },
+    { ad:'Gram Külçe (1 gr)',         alt:'Sertifikalı külçe',            ayar:995, yontem:'gramTL', deger:0,  adetTL:150, tasTL:0,   kdv:false, alisMilyem:990, alisTL:0, gram:1 },
+    { ad:'8 Ayar Takı',               alt:'Hafif takı · yüzde işçilik',   ayar:333, yontem:'yuzde',  deger:35, adetTL:0,   tasTL:0,   kdv:false, alisMilyem:300, alisTL:0, gram:0 },
+  ];
+  const ISC_BOS = { ad:'Yeni ürün', alt:'', ayar:916, yontem:'milyem', deger:0, adetTL:0, tasTL:0, kdv:false, alisMilyem:900, alisTL:0, gram:0 };
+  function yeniId() { return 'I_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+  function iscUrunOlustur(s, sira, goster) { return Object.assign({}, ISC_BOS, s, { id: yeniId(), goster: !!goster, sira: sira }); }
+  function varsayilanIscilik() { return ISCILIK_SABLON.slice(0, 5).map((s, i) => iscUrunOlustur(s, 100 + i, i === 0)); }
+
   // ---------- Ayarlar ----------
   function varsayilanAyarlar() {
     const urunler = {};
     URUNLER.forEach((u, i) => { urunler[u.id] = { goster: VARSAYILAN_GORUNEN.includes(u.id), sira: i, alisYuzde: 0, alisTL: 0, satisYuzde: 0, satisTL: 0 }; });
-    return { dukkanAdi: '', altBaslik: '', gorunum: 'tablo', yaziBoyutu: 'normal', kaynak: 'otomatik', altBilgi: true, degisim: true, altNot: '', sayfaSuresi: 8, sayfaBasi: 6, urunler };
+    return { dukkanAdi: '', altBaslik: '', gorunum: 'tablo', yaziBoyutu: 'normal', kaynak: 'otomatik', altBilgi: true, degisim: true, altNot: '', sayfaSuresi: 8, sayfaBasi: 6, urunler,
+      iscilik: varsayilanIscilik(), hurda: Object.assign({}, HURDA_VARSAYILAN), iscilikBaz: 'ham', kdvOran: 20, hasElle: { aktif: false, alis: 0, satis: 0 } };
+  }
+  // Kaydedilmiş / dosyadan gelen ayarı varsayılanlarla birleştirir (eksik alanlar tamamlanır)
+  function ayarBirlestir(s) {
+    const d = varsayilanAyarlar();
+    if (!s || typeof s !== 'object') return d;
+    const a = Object.assign({}, d, s, { urunler: Object.assign({}, d.urunler) });
+    Object.keys(d.urunler).forEach(id => { if (s.urunler && s.urunler[id]) a.urunler[id] = Object.assign({}, d.urunler[id], s.urunler[id]); });
+    a.iscilik = Array.isArray(s.iscilik) ? s.iscilik.filter(x => x && x.id && x.ad).map((x, i) => Object.assign({}, ISC_BOS, { goster: false, sira: 100 + i }, x)) : d.iscilik;
+    a.hurda = Object.assign({}, d.hurda, s.hurda || {});
+    a.hasElle = Object.assign({}, d.hasElle, s.hasElle || {});
+    return a;
   }
   function ayarYukle() {
-    const d = varsayilanAyarlar();
-    try {
-      const s = JSON.parse(localStorage.getItem(LS_AYAR) || 'null');
-      if (!s) return d;
-      const a = Object.assign({}, d, s, { urunler: Object.assign({}, d.urunler) });
-      Object.keys(d.urunler).forEach(id => { if (s.urunler && s.urunler[id]) a.urunler[id] = Object.assign({}, d.urunler[id], s.urunler[id]); });
-      return a;
-    } catch (e) { return d; }
+    try { return ayarBirlestir(JSON.parse(localStorage.getItem(LS_AYAR) || 'null')); } catch (e) { return varsayilanAyarlar(); }
   }
   function ayarKaydet() { try { localStorage.setItem(LS_AYAR, JSON.stringify(ayar)); } catch (e) {} }
   let ayar = ayarYukle();
@@ -543,15 +862,63 @@
 
   // ---------- Hesap & format ----------
   function hesapla(u) {
+    if (u.isc) return iscPanoHesap(u.isc);
     const f = fiyat[u.id]; if (!f) return null;
     const k = ayar.urunler[u.id];
     return { alis: f.alis * (1 - (k.alisYuzde || 0) / 100) - (k.alisTL || 0), satis: f.satis * (1 + (k.satisYuzde || 0) / 100) + (k.satisTL || 0), degisim: f.degisim };
+  }
+
+  // ---------- İşçilik hesabı ----------
+  function ayarBilgi(m) { return AYARLAR.find(x => x.m === +m); }
+  function ayarAdi(m) { const a = ayarBilgi(m); return a ? a.ad : m + '‰'; }
+  function ayarKb(m) { const a = ayarBilgi(m); return a ? a.k : m + '‰'; }
+  function iscAlt(it) {
+    const d = +it.deger || 0;
+    const y = it.yontem === 'milyem' ? (+it.ayar + d) + '‰ satış milyemi' : d > 0 ? (it.yontem === 'gramTL' ? '+' + para(d) + ' ₺/gr işçilik' : '+%' + d + ' işçilik') : +it.adetTL > 0 ? '+' + para(+it.adetTL) + ' ₺ işçilik' : 'işçiliksiz';
+    return (+it.gram > 0 ? it.gram + ' gr · ' : '') + ayarAdi(it.ayar).toLowerCase() + ' · ' + y + (+it.gram > 0 ? ' · adet' : ' · gram');
+  }
+  // İşçilikli ürünleri pano ürünü biçimine çevirir (isc alanı asıl kaydı gösterir)
+  function iscUrunler(a) { return ((a || ayar).iscilik || []).map(it => ({ id: it.id, ad: it.ad, alt: it.alt ? it.alt + ' · ' + iscAlt(it) : iscAlt(it), kb: ayarKb(it.ayar), cur: '₺', isc: it })); }
+  function tumUrunler(a) { return URUNLER.concat(iscUrunler(a)); }
+  function urunAyar(u, a) { return u.isc ? u.isc : (a || ayar).urunler[u.id]; }
+  // İşçilik hesabına baz alınan has altın gram fiyatı
+  function hasFiyati(a) {
+    a = a || ayar;
+    if (a.hasElle && a.hasElle.aktif && +a.hasElle.satis > 0) return { alis: +a.hasElle.alis > 0 ? +a.hasElle.alis : +a.hasElle.satis, satis: +a.hasElle.satis, degisim: null, elle: true };
+    const f = fiyat.ALTIN; if (!f) return null;
+    if (a.iscilikBaz === 'pano') { const k = a.urunler.ALTIN; return { alis: f.alis * (1 - (k.alisYuzde || 0) / 100) - (k.alisTL || 0), satis: f.satis * (1 + (k.satisYuzde || 0) / 100) + (k.satisTL || 0), degisim: f.degisim }; }
+    return { alis: f.alis, satis: f.satis, degisim: f.degisim };
+  }
+  // 1 gram için malzeme ve işçilik (satış)
+  function iscGram(it, has) {
+    const malzeme = has.satis * (+it.ayar || 0) / 1000, d = +it.deger || 0;
+    const isc = it.yontem === 'gramTL' ? d : it.yontem === 'yuzde' ? malzeme * d / 100 : has.satis * d / 1000;
+    return { malzeme, isc };
+  }
+  // Parça hesabı: gram × adet, indirim düşülmüş; alış (hurda geri alım) karşılığı da verilir
+  function parcaHesap(it, gram, adet, indirim, has, a) {
+    a = a || ayar; has = has || hasFiyati(a); if (!has) return null;
+    gram = Math.max(0, +gram || 0); adet = Math.max(1, Math.round(+adet || 1)); indirim = Math.max(0, +indirim || 0);
+    const g = iscGram(it, has), kdvOran = +a.kdvOran || 0;
+    const malzeme = g.malzeme * gram, iscilik = g.isc * gram + (+it.adetTL || 0), tas = +it.tasTL || 0;
+    const kdv = it.kdv ? (iscilik + tas) * kdvOran / 100 : 0;
+    const birim = malzeme + iscilik + tas + kdv, toplam = Math.max(0, birim * adet - indirim);
+    const alisGr = Math.max(0, has.alis * (+it.alisMilyem || 0) / 1000 - (+it.alisTL || 0));
+    return { has, gram, adet, indirim, malzeme, iscilik, tas, kdv, kdvOran, birim, toplam, iscGr: g.isc, malzemeGr: g.malzeme,
+      grFiyat: gram > 0 ? birim / gram : 0, milyem: gram > 0 && has.satis > 0 ? birim / gram / has.satis * 1000 : 0, alisGr, alisToplam: alisGr * gram * adet };
+  }
+  // Panoda gösterilen fiyat: standart gramaj varsa adet fiyatı, yoksa gram fiyatı (parça işçiliği ve taş hariç)
+  function iscPanoHesap(it, a) {
+    a = a || ayar; const has = hasFiyati(a); if (!has) return null;
+    if (+it.gram > 0) { const p = parcaHesap(it, +it.gram, 1, 0, has, a); return { alis: p.alisToplam, satis: p.toplam, degisim: has.degisim, has }; }
+    const g = iscGram(it, has), kdv = it.kdv ? g.isc * (+a.kdvOran || 0) / 100 : 0;
+    return { alis: Math.max(0, has.alis * (+it.alisMilyem || 0) / 1000 - (+it.alisTL || 0)), satis: g.malzeme + g.isc + kdv, degisim: has.degisim, has };
   }
   const fmt = new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   const para = v => fmt.format(v);
   function paraSplit(v) { const s = para(v); const i = s.lastIndexOf(','); return i < 0 ? [s, ''] : [s.slice(0, i), s.slice(i)]; }
   const $ = id => document.getElementById(id);
-  function gorunenler() { return URUNLER.filter(u => ayar.urunler[u.id].goster).sort((a, b) => ayar.urunler[a.id].sira - ayar.urunler[b.id].sira); }
+  function gorunenler() { return tumUrunler().filter(u => urunAyar(u).goster).sort((a, b) => urunAyar(a).sira - urunAyar(b).sira); }
   function durum() {
     const canli = Date.now() - sonVeriZamani < STALE_MS;
     if (canli && aktifKaynak === 'harem') return { cls: 'ok', tx: 'Canlı · Harem Altın', src: 'Harem Altın (canlı)' };
@@ -580,7 +947,7 @@
     list.forEach(u => {
       const row = document.createElement('div'); row.className = 'trow' + (u.hero ? ' hero' : '');
       row.innerHTML =
-        `<div class="pname"><span class="kbadge ${u.hero ? 'hi' : u.dim ? 'dim' : ''}">${u.kb}</span><div class="nm"><div class="n">${u.ad}${u.yeni ? ' (Yeni)' : u.eski ? ' (Eski)' : ''}</div><div class="a">${u.alt}</div></div></div>` +
+        `<div class="pname"><span class="kbadge ${u.hero ? 'hi' : u.dim ? 'dim' : u.isc ? 'isc' : ''}">${u.kb}</span><div class="nm"><div class="n">${u.ad}${u.yeni ? ' (Yeni)' : u.eski ? ' (Eski)' : ''}${u.isc ? '<span class="tisc">İŞÇİLİK DAHİL</span>' : ''}</div><div class="a">${u.alt}</div></div></div>` +
         `<div class="pr al"><span class="v">—</span><span class="cur">${u.cur}</span></div>` +
         `<div class="pr sa"><span class="v">—</span><span class="cur">${u.cur}</span></div>` +
         `<div class="chg flat"><span class="ar"></span><span class="v">—</span></div>`;
@@ -633,7 +1000,7 @@
     page.forEach(u => {
       const row = document.createElement('div'); row.className = 'vrow' + (u.hero ? ' hero' : '');
       row.innerHTML =
-        `<div class="pname"><span class="vbadge">${u.kb}</span><div class="nm"><div class="n"><span>${u.ad}</span>${u.yeni ? '<span class="yeni">YENİ</span>' : u.eski ? '<span class="yeni">ESKİ</span>' : ''}</div><div class="a">${u.alt}</div></div></div>` +
+        `<div class="pname"><span class="vbadge${u.isc ? ' isc' : ''}">${u.kb}</span><div class="nm"><div class="n"><span>${u.ad}</span>${u.yeni ? '<span class="yeni">YENİ</span>' : u.eski ? '<span class="yeni">ESKİ</span>' : u.isc ? '<span class="yeni">İŞÇİLİK DAHİL</span>' : ''}</div><div class="a">${u.alt}</div></div></div>` +
         `<div class="pr al"><span class="int">—</span><span class="dec"></span></div>` +
         `<div class="pr sa"><span class="ar"></span><span class="int">—</span><span class="dec"></span><span class="cur">${u.cur}</span></div>`;
       box.appendChild(row);
@@ -688,7 +1055,7 @@
     $('tNote').textContent = ayar.altNot; $('vNote').textContent = ayar.altNot;
     $('tFoot').style.display = ayar.altBilgi ? '' : 'none';
     document.querySelector('.vfoot').style.display = ayar.altBilgi ? '' : 'none';
-    document.title = (ayar.dukkanAdi ? ayar.dukkanAdi + ' · ' : '') + 'Canlı Altın Fiyatları';
+    document.title = tezgahModu ? 'Tezgah Hesaplayıcı' + (ayar.dukkanAdi ? ' · ' + ayar.dukkanAdi : '') : (ayar.dukkanAdi ? ayar.dukkanAdi + ' · ' : '') + 'Canlı Altın Fiyatları';
     onceki = {};
     clearInterval(vPageTimer);
     if (ayar.gorunum === 'vitrin') vitrinKur(); else tabloKur();
@@ -707,16 +1074,41 @@
     segSet('segView', taslak.gorunum); segSet('segFont', taslak.yaziBoyutu);
     $('inpSource').value = taslak.kaynak; $('inpPgSec').value = String(taslak.sayfaSuresi); $('inpPgN').value = String(taslak.sayfaBasi);
     $('inpChg').checked = !!taslak.degisim; $('inpFooter').checked = !!taslak.altBilgi;
+    $('inpIscBaz').value = taslak.iscilikBaz || 'ham'; $('inpKdv').value = taslak.kdvOran;
+    $('inpHasElle').checked = !!taslak.hasElle.aktif; $('inpHasA').value = taslak.hasElle.alis || ''; $('inpHasS').value = taslak.hasElle.satis || '';
+    $('hasElleBox').style.display = taslak.hasElle.aktif ? '' : 'none';
+    $('hurdaGrid').innerHTML = AYARLAR.map(x => `<div class="f"><label>${x.ad}</label><input class="inp" type="number" step="1" min="0" max="1000" data-hurda="${x.m}" value="${taslak.hurda[x.m] != null ? taslak.hurda[x.m] : ''}"></div>`).join('');
+    $('selSablon').innerHTML = ISCILIK_SABLON.map((s, i) => `<option value="${i}">${s.ad} — ${s.alt}</option>`).join('') + '<option value="bos">Boş ürün (kendim gireceğim)</option>';
     urunListesiKur();
     $('overlay').classList.add('open'); $('panel').classList.add('open');
   }
   function panelKapat() { $('overlay').classList.remove('open'); $('panel').classList.remove('open'); taslak = null; }
 
+  function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;'); }
+  function yontemBirim(y) { return y === 'gramTL' ? '₺/gr' : y === 'yuzde' ? '%' : '‰'; }
+  function iscKartHtml(k) {
+    const ozel = !ayarBilgi(k.ayar);
+    return `<div class="ph"><input type="checkbox" data-f="goster" ${k.goster ? 'checked' : ''} title="Panoda göster"><input class="nmi" type="text" data-f="ad" value="${esc(k.ad)}" maxlength="40" placeholder="Ürün adı"><span class="kb isc">${ayarKb(k.ayar)}</span><span class="sp"></span><button data-mv="-1" title="Yukarı">↑</button><button data-mv="1" title="Aşağı">↓</button><button class="del" data-del title="Ürünü sil">✕</button></div>` +
+      `<div class="ifields">` +
+        `<div class="f"><label>Ayar (saflık)</label><select class="inp" data-f="ayarSec">${AYARLAR.map(x => `<option value="${x.m}" ${!ozel && x.m === +k.ayar ? 'selected' : ''}>${x.ad} · ${x.m}‰</option>`).join('')}<option value="ozel" ${ozel ? 'selected' : ''}>Özel milyem…</option></select></div>` +
+        `<div class="f" data-ozel ${ozel ? '' : 'hidden'}><label>Özel saflık</label><div class="row"><input class="inp" type="number" step="1" min="1" max="1000" data-f="ayar" value="${k.ayar}"><span class="u">‰</span></div></div>` +
+        `<div class="f ${ozel ? '' : 'w2'}" data-altf><label>Açıklama (panoda alt satır)</label><input class="inp" type="text" data-f="alt" value="${esc(k.alt)}" maxlength="50" placeholder="Örn. Ajda bilezik"></div>` +
+        `<div class="f w2"><label>İşçilik yöntemi</label><div class="mini-seg" data-yontem><button data-y="milyem" class="${k.yontem === 'milyem' ? 'on' : ''}">‰ Milyem üzerine</button><button data-y="gramTL" class="${k.yontem === 'gramTL' ? 'on' : ''}">₺ Gram başına</button><button data-y="yuzde" class="${k.yontem === 'yuzde' ? 'on' : ''}">% Malzeme yüzdesi</button></div></div>` +
+        `<div class="f"><label>İşçilik</label><div class="row"><input class="inp" type="number" step="0.01" min="0" data-f="deger" value="${k.deger}"><span class="u" data-birim>${yontemBirim(k.yontem)}</span></div></div>` +
+        `<div class="f"><label>Parça işçiliği</label><div class="row"><input class="inp" type="number" step="1" min="0" data-f="adetTL" value="${k.adetTL}"><span class="u">₺/ad</span></div></div>` +
+        `<div class="f"><label>Taş / aksesuar</label><div class="row"><input class="inp" type="number" step="1" min="0" data-f="tasTL" value="${k.tasTL}"><span class="u">₺/ad</span></div></div>` +
+        `<div class="f"><label>Standart gramaj</label><div class="row"><input class="inp" type="number" step="0.01" min="0" data-f="gram" value="${k.gram}" title="0 = panoda gram fiyatı, girilirse adet fiyatı gösterilir"><span class="u">gr</span></div></div>` +
+        `<div class="f"><label>Alış (hurda) milyemi</label><div class="row"><input class="inp" type="number" step="1" min="0" max="1000" data-f="alisMilyem" value="${k.alisMilyem}"><span class="u">‰</span></div></div>` +
+        `<div class="f"><label>Alış ek kesinti</label><div class="row"><input class="inp" type="number" step="1" min="0" data-f="alisTL" value="${k.alisTL}"><span class="u">₺/gr</span></div></div>` +
+        `<div class="f w3"><label class="chk"><input type="checkbox" data-f="kdv" ${k.kdv ? 'checked' : ''}> İşçilik ve taş bedeline KDV ekle (%${+taslak.kdvOran || 0})</label></div>` +
+      `</div><div class="prev"></div>`;
+  }
   function urunListesiKur() {
     const box = $('prodList'); box.innerHTML = '';
-    URUNLER.slice().sort((a, b) => taslak.urunler[a.id].sira - taslak.urunler[b.id].sira).forEach(u => {
-      const k = taslak.urunler[u.id];
-      const el = document.createElement('div'); el.className = 'pcard' + (k.goster ? '' : ' off'); el.dataset.id = u.id;
+    tumUrunler(taslak).sort((a, b) => urunAyar(a, taslak).sira - urunAyar(b, taslak).sira).forEach(u => {
+      const k = urunAyar(u, taslak);
+      const el = document.createElement('div'); el.className = 'pcard' + (u.isc ? ' isc' : '') + (k.goster ? '' : ' off'); el.dataset.id = u.id;
+      if (u.isc) { el.innerHTML = iscKartHtml(k); box.appendChild(el); return; }
       el.innerHTML =
         `<div class="ph"><input type="checkbox" data-f="goster" ${k.goster ? 'checked' : ''}><span class="nm">${u.ad}${u.yeni ? ' (Yeni)' : u.eski ? ' (Eski)' : ''}</span><span class="kb">${u.kb}</span><span class="sp"></span><button data-mv="-1" title="Yukarı">↑</button><button data-mv="1" title="Aşağı">↓</button></div>` +
         `<div class="kom">` +
@@ -733,45 +1125,94 @@
   }
   function onizlemeGuncelle() {
     if (!taslak) return;
-    let aktif = 0;
+    let aktif = 0; const has = hasFiyati(taslak);
+    const map = {}; tumUrunler(taslak).forEach(u => { map[u.id] = u; });
     document.querySelectorAll('#prodList .pcard').forEach(el => {
-      const id = el.dataset.id, f = fiyat[id], k = taslak.urunler[id], u = URUNLER.find(x => x.id === id);
-      if (k.goster) aktif++;
+      const id = el.dataset.id, u = map[id]; if (!u) return;
+      const k = urunAyar(u, taslak); if (k.goster) aktif++;
       const pv = el.querySelector('.prev');
+      if (u.isc) {
+        if (!has) { pv.innerHTML = '<span>◌ has altın fiyatı bekleniyor</span>'; return; }
+        const h = iscPanoHesap(k, taslak), g = iscGram(k, has), adet = +k.gram > 0, birim = adet ? ' ₺/adet' : ' ₺/gr';
+        const m = h.satis / (adet ? +k.gram : 1) / has.satis * 1000;
+        pv.innerHTML = `<span>Has: <b>${para(has.satis)}</b>${has.elle ? ' (elle)' : ''}</span><span>Malzeme <b>${para(g.malzeme)}</b> + işçilik <b>${para(g.isc)}</b> ₺/gr</span><span>Satış: <b class="g">${para(h.satis)}${birim}</b> (${m.toFixed(0)}‰)</span><span>Alış: <b>${para(h.alis)}${birim}</b></span>`;
+        return;
+      }
+      const f = fiyat[id];
       if (!f) { pv.innerHTML = '<span>◌ veri bekleniyor</span>'; return; }
       const a = f.alis * (1 - k.alisYuzde / 100) - k.alisTL, s = f.satis * (1 + k.satisYuzde / 100) + k.satisTL;
       pv.innerHTML = `<span>Ham: <b>${para(f.alis)}</b> / <b>${para(f.satis)}</b></span><span>Alış: <b>${para(a)} ${u.cur}</b></span><span>Satış: <b class="g">${para(s)} ${u.cur}</b></span>`;
     });
     $('pCnt').textContent = aktif + ' aktif ürün';
     const s = durum(); $('pChip').className = 'chip ' + (s.cls === 'ok' ? '' : s.cls); $('pChip').textContent = s.tx;
+    $('pHasChip').className = 'chip ' + (has ? (has.elle ? 'warn' : '') : 'err'); $('pHasChip').textContent = has ? 'Has: ' + para(has.alis) + ' / ' + para(has.satis) + (has.elle ? ' (elle)' : '') : 'Has fiyatı yok';
   }
+  function taslakKayit(el) { return el.classList.contains('isc') ? taslak.iscilik.find(x => x.id === el.dataset.id) : taslak.urunler[el.dataset.id]; }
   $('prodList').addEventListener('input', e => {
     const el = e.target.closest('.pcard'); if (!el || !taslak) return;
-    const k = taslak.urunler[el.dataset.id], f = e.target.dataset.f; if (!f) return;
+    const f = e.target.dataset.f; if (!f) return;
+    const k = taslakKayit(el); if (!k) return;
     if (f === 'goster') { k.goster = e.target.checked; el.classList.toggle('off', !k.goster); }
+    else if (f === 'kdv') k.kdv = e.target.checked;
+    else if (f === 'ad' || f === 'alt') k[f] = e.target.value;
+    else if (f === 'ayarSec') {
+      const ozel = e.target.value === 'ozel';
+      el.querySelector('[data-ozel]').hidden = !ozel; el.querySelector('[data-altf]').classList.toggle('w2', !ozel);
+      if (!ozel) { k.ayar = +e.target.value; el.querySelector('[data-f="ayar"]').value = k.ayar; el.querySelector('.kb').textContent = ayarKb(k.ayar); }
+    }
+    else if (f === 'ayar') { k.ayar = Math.min(1000, Math.max(1, parseFloat(e.target.value) || 1)); el.querySelector('.kb').textContent = ayarKb(k.ayar); }
     else k[f] = parseFloat(e.target.value) || 0;
     onizlemeGuncelle();
   });
+  function listeYenile() { const body = $('panel').querySelector('.body'), top = body.scrollTop; urunListesiKur(); body.scrollTop = top; }
   $('prodList').addEventListener('click', e => {
-    const b = e.target.closest('button[data-mv]'); if (!b || !taslak) return;
-    const id = b.closest('.pcard').dataset.id, mv = +b.dataset.mv;
-    const list = URUNLER.slice().sort((a, c) => taslak.urunler[a.id].sira - taslak.urunler[c.id].sira);
+    if (!taslak) return;
+    const card = e.target.closest('.pcard'); if (!card) return;
+    const id = card.dataset.id;
+    const yb = e.target.closest('[data-yontem] button');
+    if (yb) {
+      const k = taslakKayit(card); if (!k) return;
+      k.yontem = yb.dataset.y; yb.parentNode.querySelectorAll('button').forEach(b => b.classList.toggle('on', b === yb));
+      card.querySelector('[data-birim]').textContent = yontemBirim(k.yontem); onizlemeGuncelle(); return;
+    }
+    if (e.target.closest('[data-del]')) {
+      const k = taslakKayit(card); if (!k) return;
+      if (confirm(`"${k.ad}" ürünü listeden silinsin mi?`)) { taslak.iscilik = taslak.iscilik.filter(x => x.id !== id); listeYenile(); }
+      return;
+    }
+    const b = e.target.closest('button[data-mv]'); if (!b) return;
+    const mv = +b.dataset.mv;
+    const list = tumUrunler(taslak).sort((a, c) => urunAyar(a, taslak).sira - urunAyar(c, taslak).sira);
     const i = list.findIndex(u => u.id === id), j = i + mv;
     if (j < 0 || j >= list.length) return;
     [list[i], list[j]] = [list[j], list[i]];
-    list.forEach((u, n) => taslak.urunler[u.id].sira = n);
-    const top = $('panel').querySelector('.body').scrollTop;
-    urunListesiKur();
-    $('panel').querySelector('.body').scrollTop = top;
+    list.forEach((u, n) => urunAyar(u, taslak).sira = n);
+    listeYenile();
   });
+  $('btnIscEkle').addEventListener('click', () => {
+    if (!taslak) return;
+    const v = $('selSablon').value, s = v === 'bos' ? {} : ISCILIK_SABLON[+v] || {};
+    const maxSira = tumUrunler(taslak).reduce((m, u) => Math.max(m, urunAyar(u, taslak).sira), 0);
+    taslak.iscilik.push(iscUrunOlustur(s, maxSira + 1, true));
+    listeYenile();
+    const cards = document.querySelectorAll('#prodList .pcard'), last = cards[cards.length - 1];
+    if (last) { last.scrollIntoView({ block: 'center', behavior: 'smooth' }); const inp = last.querySelector('.nmi'); if (inp) { inp.focus(); inp.select(); } }
+  });
+  $('inpHasElle').addEventListener('change', e => { $('hasElleBox').style.display = e.target.checked ? '' : 'none'; if (taslak) { taslak.hasElle.aktif = e.target.checked; onizlemeGuncelle(); } });
+  ['inpHasA', 'inpHasS', 'inpKdv', 'inpIscBaz'].forEach(id => $(id).addEventListener('input', () => {
+    if (!taslak) return;
+    taslak.hasElle.alis = +$('inpHasA').value || 0; taslak.hasElle.satis = +$('inpHasS').value || 0; taslak.kdvOran = Math.max(0, +$('inpKdv').value || 0); taslak.iscilikBaz = $('inpIscBaz').value;
+    onizlemeGuncelle();
+  }));
   $('btnSave').addEventListener('click', () => {
     panelOku();
     const eskiKaynak = ayar.kaynak;
     ayar = taslak; ayarKaydet(); panelKapat(); ayarUygula();
+    if (hesapAcikMi()) { hProdsKur(); hAlisKur(); hesapRender(); }
     if (eskiKaynak !== ayar.kaynak) { haremKapat(); sonVeriZamani = 0; aktifKaynak = null; trSonDeneme = 0; kaynakKontrol(); }
   });
   $('btnReset').addEventListener('click', () => {
-    if (!confirm('Tüm ayarlar (komisyonlar, ürün seçimi, dükkan adı) varsayılana dönecek. Emin misiniz?')) return;
+    if (!confirm('Tüm ayarlar (komisyonlar, işçilikli ürünler, ürün seçimi, dükkan adı) varsayılana dönecek. Emin misiniz?')) return;
     ayar = varsayilanAyarlar(); ayarKaydet(); panelKapat(); ayarUygula();
   });
   $('btnClose').addEventListener('click', panelKapat);
@@ -783,6 +1224,9 @@
     taslak.gorunum = segGet('segView') || 'tablo'; taslak.yaziBoyutu = segGet('segFont') || 'normal';
     taslak.kaynak = $('inpSource').value; taslak.sayfaSuresi = +$('inpPgSec').value || 8; taslak.sayfaBasi = +$('inpPgN').value || 6;
     taslak.degisim = $('inpChg').checked; taslak.altBilgi = $('inpFooter').checked;
+    taslak.iscilikBaz = $('inpIscBaz').value; taslak.kdvOran = Math.max(0, +$('inpKdv').value || 0);
+    taslak.hasElle = { aktif: $('inpHasElle').checked, alis: +$('inpHasA').value || 0, satis: +$('inpHasS').value || 0 };
+    document.querySelectorAll('#hurdaGrid input').forEach(i => { taslak.hurda[i.dataset.hurda] = Math.max(0, +i.value || 0); });
   }
   $('btnExport').addEventListener('click', () => {
     panelOku();
@@ -799,9 +1243,7 @@
       try {
         const s = JSON.parse(r.result);
         if (!s || typeof s !== 'object' || !s.urunler) throw 0;
-        const d = varsayilanAyarlar();
-        const a = Object.assign({}, d, s, { urunler: Object.assign({}, d.urunler) });
-        Object.keys(d.urunler).forEach(id => { if (s.urunler[id]) a.urunler[id] = Object.assign({}, d.urunler[id], s.urunler[id]); });
+        const a = ayarBirlestir(s);
         const kaydedilmis = ayar; ayar = a; panelAc(); ayar = kaydedilmis; // paneli dosyadaki değerlerle doldur, Kaydet'e basınca uygulanır
         alert('Ayarlar dosyadan yüklendi. Uygulamak için "Kaydet ve Panoya Uygula" butonuna basın.');
       } catch (err) { alert('Dosya okunamadı: geçerli bir kuyumcu ayar dosyası değil.'); }
@@ -810,17 +1252,218 @@
     r.readAsText(f);
   });
 
+  // ---------- Tezgah hesaplayıcı ----------
+  let hSec = null, hTab = 'satis', hAlisM = 916, tezgahModu = false;
+  let hSerbest = Object.assign({}, ISC_BOS, { ad: 'Serbest hesap' });
+  let sepet = [];        // { tip:'satis'|'alis', ad, detay, tutar }
+  let hMilyemler = [];   // kullanıcının cetvele eklediği milyemler
+  const MILYEM_STD = [333, 375, 585, 600, 650, 700, 750, 800, 850, 875, 900, 905, 910, 916, 920, 925, 930, 935, 940, 945, 950, 960, 975, 995, 1000];
+  const TLf = v => para(v) + ' ₺';
+  const yeniEski = u => u.yeni ? ' (Yeni)' : u.eski ? ' (Eski)' : '';
+  function hesapAcikMi() { return $('hesap').classList.contains('open'); }
+  function hesapAc() {
+    panelKapat();
+    $('hesap').classList.add('open');
+    $('hShop').textContent = ayar.dukkanAdi || 'Canlı has fiyatıyla takı fiyatı, hurda alışı ve takas hesabı';
+    if (!hSec || (hSec !== 'serbest' && !ayar.iscilik.find(x => x.id === hSec))) hSec = ayar.iscilik.length ? ayar.iscilik[0].id : 'serbest';
+    hProdsKur(); hAlisKur(); hesapRender();
+    setTimeout(() => { const g = $('hGram'); g.focus(); g.select(); }, 60);
+  }
+  function hesapKapat() { $('hesap').classList.remove('open'); }
+  function hesapToggle() { if (hesapAcikMi()) hesapKapat(); else hesapAc(); }
+  function hTabSec(t) {
+    hTab = t;
+    document.querySelectorAll('.htabs button').forEach(b => b.classList.toggle('on', b.dataset.t === t));
+    document.querySelectorAll('.hsec').forEach(s => s.classList.toggle('on', s.dataset.t === t));
+    hesapRender();
+    const odak = { satis: 'hGram', alis: 'haGram', milyem: 'htFiyat' }[t]; if (odak) $(odak).focus();
+  }
+  document.querySelector('.htabs').addEventListener('click', e => { const b = e.target.closest('button[data-t]'); if (b) hTabSec(b.dataset.t); });
+  $('hClose').addEventListener('click', hesapKapat);
+  document.querySelectorAll('[data-act="hesap"]').forEach(b => b.addEventListener('click', hesapAc));
+  function flashBadge() { const b = $('hSepetN'); b.classList.remove('pop'); void b.offsetWidth; b.classList.add('pop'); }
+
+  // --- Satış
+  function hSecili() { return hSec === 'serbest' ? hSerbest : ayar.iscilik.find(x => x.id === hSec) || hSerbest; }
+  function hProdsKur() {
+    $('hProds').innerHTML = ayar.iscilik.map(it => `<button data-id="${it.id}" class="${hSec === it.id ? 'on' : ''}"><span class="n">${esc(it.ad)}</span><span class="a">${esc(iscAlt(it))}</span><span class="p" data-p>—</span></button>`).join('') +
+      `<button data-id="serbest" class="serbest ${hSec === 'serbest' ? 'on' : ''}"><span class="n">Serbest hesap</span><span class="a">Ayar ve işçiliği elle gir</span><span class="p" data-p>—</span></button>`;
+    $('hSerbestBox').hidden = hSec !== 'serbest';
+    $('hsAyar').innerHTML = AYARLAR.map(x => `<option value="${x.m}" ${x.m === +hSerbest.ayar ? 'selected' : ''}>${x.ad} · ${x.m}‰</option>`).join('');
+    $('hsDeger').value = hSerbest.deger; $('hsAdetTL').value = hSerbest.adetTL; $('hsTas').value = hSerbest.tasTL; $('hsKdv').checked = !!hSerbest.kdv;
+    document.querySelectorAll('#hsYontem button').forEach(b => b.classList.toggle('on', b.dataset.v === hSerbest.yontem));
+    $('hsDegerU').textContent = yontemBirim(hSerbest.yontem);
+  }
+  $('hProds').addEventListener('click', e => { const b = e.target.closest('button[data-id]'); if (!b) return; hSec = b.dataset.id; hProdsKur(); hesapRender(); $('hGram').focus(); });
+  $('hSerbestBox').addEventListener('input', e => {
+    const id = e.target.id, v = +e.target.value || 0;
+    if (id === 'hsAyar') hSerbest.ayar = v; else if (id === 'hsDeger') hSerbest.deger = v; else if (id === 'hsAdetTL') hSerbest.adetTL = v; else if (id === 'hsTas') hSerbest.tasTL = v; else if (id === 'hsKdv') hSerbest.kdv = e.target.checked;
+    hesapRender();
+  });
+  $('hsYontem').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; hSerbest.yontem = b.dataset.v; hProdsKur(); hesapRender(); });
+  ['hGram', 'hAdet', 'hInd'].forEach(id => {
+    $(id).addEventListener('input', hesapRender);
+    $(id).addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); $('hEkle').click(); } });
+  });
+  document.querySelectorAll('.stp').forEach(b => b.addEventListener('click', () => { const i = $('hAdet'); i.value = Math.max(1, (+i.value || 1) + (+b.dataset.stp)); hesapRender(); }));
+  $('hQuick').innerHTML = [1, 1.75, 2, 2.5, 3.5, 5, 7, 10, 15, 20, 25, 50].map(g => `<button data-g="${g}">${String(g).replace('.', ',')} gr</button>`).join('');
+  $('hQuick').addEventListener('click', e => { const b = e.target.closest('button[data-g]'); if (!b) return; $('hGram').value = b.dataset.g; hesapRender(); $('hAdet').focus(); });
+  function hSatisTemizle() { $('hGram').value = ''; $('hAdet').value = 1; $('hInd').value = ''; hesapRender(); $('hGram').focus(); }
+  $('hTemizle').addEventListener('click', hSatisTemizle);
+  function hSatisSonuc() {
+    const it = hSecili(), gram = +$('hGram').value || (+it.gram > 0 ? +it.gram : 0);
+    return { it, p: parcaHesap(it, gram, +$('hAdet').value || 1, +$('hInd').value || 0) };
+  }
+  function hSatisRender(has) {
+    document.querySelectorAll('#hProds button[data-id]').forEach(b => {
+      const x = b.dataset.id === 'serbest' ? hSerbest : ayar.iscilik.find(y => y.id === b.dataset.id), h = x && has ? iscPanoHesap(x) : null;
+      b.querySelector('[data-p]').textContent = h ? para(h.satis) + (+x.gram > 0 ? ' ₺/ad' : ' ₺/gr') : '—';
+    });
+    const { it, p } = hSatisSonuc(), box = $('hRes');
+    if (!p) { box.innerHTML = '<div class="empty2">Has altın fiyatı bekleniyor…<br><small>İnternet yoksa Ayarlar → İşçilik Hesap Ayarları → "Has fiyatını elle gir"</small></div>'; return; }
+    const d = +it.deger || 0;
+    const yontem = it.yontem === 'gramTL' ? para(d) + ' ₺/gr' : it.yontem === 'yuzde' ? '%' + d + ' malzeme üzerine' : d + '‰ (' + para(p.iscGr) + ' ₺/gr)';
+    let h = `<div class="rt"><span>Ürün</span><b>${esc(it.ad)} · ${ayarAdi(it.ayar)}</b></div>`;
+    h += `<div class="rl"><span>Has satış${p.has.elle ? ' (elle girildi)' : ''}</span><b>${para(p.has.satis)} ₺/gr</b></div>`;
+    h += `<div class="rl"><span>Malzeme · ${para(p.gram)} gr × ${it.ayar}‰ (${para(p.malzemeGr)} ₺/gr)</span><b>${TLf(p.malzeme)}</b></div>`;
+    h += `<div class="rl"><span>İşçilik · ${yontem}${+it.adetTL > 0 ? ' + ' + para(+it.adetTL) + ' ₺ parça' : ''}</span><b>${TLf(p.iscilik)}</b></div>`;
+    if (p.tas > 0) h += `<div class="rl"><span>Taş / aksesuar</span><b>${TLf(p.tas)}</b></div>`;
+    if (p.kdv > 0) h += `<div class="rl"><span>KDV %${p.kdvOran} (işçilik + taş)</span><b>${TLf(p.kdv)}</b></div>`;
+    if (p.adet > 1) h += `<div class="rl"><span>Birim fiyat × adet</span><b>${TLf(p.birim)} × ${p.adet}</b></div>`;
+    if (p.indirim > 0) h += `<div class="rl neg"><span>İndirim</span><b>− ${TLf(p.indirim)}</b></div>`;
+    h += `<div class="rtot"><span>Toplam satış</span><b>${para(p.toplam)}<small>₺</small></b></div>`;
+    h += `<div class="rmeta"><span>Gram fiyatı <b>${p.gram > 0 ? TLf(p.grFiyat) : '—'}</b></span><span>Satış milyemi <b>${p.gram > 0 ? p.milyem.toFixed(0) + '‰' : '—'}</b></span><span>Hurda geri alım <b>${TLf(p.alisToplam)}</b></span></div>`;
+    if (p.gram <= 0) h += `<div class="rl sub"><span>Gram girin — parça işçiliği ve taş bedeli gramsız da toplama eklenir.</span></div>`;
+    box.innerHTML = h;
+  }
+  $('hEkle').addEventListener('click', () => {
+    const { it, p } = hSatisSonuc(); if (!p || p.toplam <= 0) return;
+    sepet.push({ tip: 'satis', ad: it.ad, detay: `${para(p.gram)} gr × ${p.adet} · ${ayarAdi(it.ayar)}${p.gram > 0 ? ' · ' + p.milyem.toFixed(0) + '‰' : ''}${p.indirim ? ' · indirim ' + para(p.indirim) : ''}`, tutar: p.toplam });
+    hSatisTemizle(); flashBadge();
+  });
+
+  // --- Alış (hurda & sarrafiye)
+  function hAlisKur() {
+    $('hHurdaBtns').innerHTML = AYARLAR.map(x => `<button data-m="${x.m}" class="${hAlisM === x.m ? 'on' : ''}"><span class="n">${x.ad}</span><span class="a">saflık ${x.m}‰ · alış ${+ayar.hurda[x.m] || 0}‰</span><span class="p" data-p>—</span></button>`).join('');
+    $('haMilyem').value = +ayar.hurda[hAlisM] || '';
+    const secili = $('haSarr').value;
+    $('haSarr').innerHTML = URUNLER.filter(u => !u.dim && u.id !== 'ONS').map(u => `<option value="${u.id}">${u.ad}${yeniEski(u)}</option>`).join('');
+    if (secili) $('haSarr').value = secili;
+  }
+  $('hHurdaBtns').addEventListener('click', e => { const b = e.target.closest('button[data-m]'); if (!b) return; hAlisM = +b.dataset.m; hAlisKur(); hesapRender(); $('haGram').focus(); });
+  ['haGram', 'haMilyem', 'haKes', 'haSarr', 'haSarrAdet'].forEach(id => $(id).addEventListener('input', hesapRender));
+  ['haGram', 'haMilyem', 'haKes'].forEach(id => $(id).addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); $('haEkle').click(); } }));
+  function hAlisSonuc(has) {
+    const gram = +$('haGram').value || 0, m = +$('haMilyem').value || 0, kes = +$('haKes').value || 0;
+    const gr = has ? Math.max(0, has.alis * m / 1000 - kes) : 0;
+    const su = URUNLER.find(u => u.id === $('haSarr').value), sh = su ? hesapla(su) : null, sAdet = Math.max(1, Math.round(+$('haSarrAdet').value || 1));
+    return { gram, m, kes, gr, toplam: gr * gram, su, sh, sAdet, sToplam: sh ? sh.alis * sAdet : 0 };
+  }
+  function hAlisRender(has) {
+    document.querySelectorAll('#hHurdaBtns button[data-m]').forEach(b => { b.querySelector('[data-p]').textContent = has ? para(has.alis * (+ayar.hurda[b.dataset.m] || 0) / 1000) + ' ₺/gr' : '—'; });
+    const r = hAlisSonuc(has);
+    let h = `<div class="rt"><span>Hurda alışı</span><b>${ayarAdi(hAlisM)} · ${r.m}‰</b></div>`;
+    h += `<div class="rl"><span>Has alış${has && has.elle ? ' (elle girildi)' : ''}</span><b>${has ? para(has.alis) + ' ₺/gr' : '—'}</b></div>`;
+    h += `<div class="rl"><span>Alış gram fiyatı · ${r.m}‰${r.kes ? ' − ' + para(r.kes) + ' ₺' : ''}</span><b>${has ? TLf(r.gr) : '—'}</b></div>`;
+    h += `<div class="rl"><span>${para(r.gram)} gr</span><b>${has ? TLf(r.toplam) : '—'}</b></div>`;
+    h += `<div class="rtot"><span>Ödenecek (hurda)</span><b>${has ? para(r.toplam) : '—'}<small>₺</small></b></div>`;
+    if (r.su) h += `<div class="rmeta" style="margin-top:14px"><span>Sarrafiye: <b>${esc(r.su.ad + yeniEski(r.su))}</b> alış <b>${r.sh ? TLf(r.sh.alis) : '—'}</b> × ${r.sAdet} = <b>${r.sh ? TLf(r.sToplam) : '—'}</b></span></div>`;
+    $('haRes').innerHTML = h;
+  }
+  $('haEkle').addEventListener('click', () => {
+    const r = hAlisSonuc(hasFiyati()); if (r.toplam <= 0) return;
+    sepet.push({ tip: 'alis', ad: ayarAdi(hAlisM) + ' hurda', detay: `${para(r.gram)} gr × ${r.m}‰${r.kes ? ' − ' + para(r.kes) + ' ₺/gr' : ''}`, tutar: r.toplam });
+    $('haGram').value = ''; hesapRender(); flashBadge(); $('haGram').focus();
+  });
+  $('haSarrEkle').addEventListener('click', () => {
+    const r = hAlisSonuc(hasFiyati()); if (!r.sh || r.sToplam <= 0) return;
+    sepet.push({ tip: 'alis', ad: r.su.ad + yeniEski(r.su), detay: `${r.sAdet} adet × ${TLf(r.sh.alis)}`, tutar: r.sToplam });
+    hesapRender(); flashBadge();
+  });
+
+  // --- İşlem özeti / takas / fiş
+  function sepetToplam() { const S = sepet.filter(x => x.tip === 'satis'), A = sepet.filter(x => x.tip === 'alis'); return { S, A, ts: S.reduce((s, x) => s + x.tutar, 0), ta: A.reduce((s, x) => s + x.tutar, 0) }; }
+  function hOzetRender() {
+    const { S, A, ts, ta } = sepetToplam(), fark = ts - ta;
+    const li = (x, i) => `<div class="li ${x.tip}"><div><div class="n">${esc(x.ad)}</div><div class="d">${esc(x.detay)}</div></div><div class="t">${TLf(x.tutar)}</div><button data-sil="${i}" title="Kaldır">✕</button></div>`;
+    $('hListS').innerHTML = S.length ? sepet.map((x, i) => x.tip === 'satis' ? li(x, i) : '').join('') : '<div class="bos">Henüz satış kalemi yok — Satış sekmesinden ekleyin.</div>';
+    $('hListA').innerHTML = A.length ? sepet.map((x, i) => x.tip === 'alis' ? li(x, i) : '').join('') : '<div class="bos">Müşterinin verdiği altın yok — takas için Alış sekmesinden ekleyin.</div>';
+    $('hOzet').innerHTML = `<div class="rt"><span>İşlem özeti</span><b>${sepet.length} kalem</b></div>` +
+      `<div class="rl"><span>Satış toplamı (${S.length})</span><b>${TLf(ts)}</b></div>` +
+      `<div class="rl neg"><span>Alış / takas düşümü (${A.length})</span><b>− ${TLf(ta)}</b></div>` +
+      `<div class="rtot"><span>${fark >= 0 ? 'Müşteri öder' : 'Müşteriye ödenir'}</span><b>${para(Math.abs(fark))}<small>₺</small></b></div>` +
+      (A.length && S.length ? '<div class="rmeta"><span>Takas: müşterinin verdiği altının karşılığı satıştan düşüldü.</span></div>' : '');
+  }
+  $('hesap').addEventListener('click', e => {
+    const sil = e.target.closest('button[data-sil]'); if (sil) { sepet.splice(+sil.dataset.sil, 1); hesapRender(); return; }
+    const ms = e.target.closest('button[data-msil]'); if (ms) { hMilyemler = hMilyemler.filter(x => x !== +ms.dataset.msil); hesapRender(); }
+  });
+  $('hSepetTemizle').addEventListener('click', () => { if (sepet.length && !confirm('İşlem listesi temizlensin mi?')) return; sepet = []; hesapRender(); });
+  $('hYazdir').addEventListener('click', () => {
+    const has = hasFiyati(), { S, A, ts, ta } = sepetToplam();
+    if (!sepet.length) return;
+    const rows = (arr, tip) => arr.map(x => `<tr><td>${esc(x.ad)}<br><small>${esc(x.detay)}</small></td><td class="r">${tip === 'alis' ? '− ' : ''}${TLf(x.tutar)}</td></tr>`).join('');
+    $('fis').innerHTML = `<h1>${esc(ayar.dukkanAdi || 'Kuyumcu')}</h1><div class="m">Fiyat teklifi · ${new Date().toLocaleString('tr-TR')} · Has altın alış/satış: ${has ? para(has.alis) + ' / ' + para(has.satis) + ' ₺' : '—'}</div>` +
+      `<table><tr><th>Kalem</th><th class="r">Tutar</th></tr>${rows(S, 'satis')}${A.length ? `<tr><th>Müşteriden alınan (takas)</th><th></th></tr>${rows(A, 'alis')}` : ''}` +
+      `<tr class="tot"><td>${ts - ta >= 0 ? 'Ödenecek' : 'Müşteriye ödenir'}</td><td class="r">${TLf(Math.abs(ts - ta))}</td></tr></table>` +
+      `<div class="note">${esc(ayar.altNot)} Fiyatlar teklif anındaki piyasa kuruna göre hesaplanmıştır; kur değiştiğinde fiyat değişebilir. Bu belge fatura / fiş yerine geçmez.</div>`;
+    window.print();
+  });
+
+  // --- Milyem cetveli & ters hesap
+  $('htAyar').innerHTML = AYARLAR.map(x => `<option value="${x.m}" ${x.m === 916 ? 'selected' : ''}>${x.ad} · ${x.m}‰</option>`).join('');
+  function hmEkle() { const v = Math.round(+$('hmOzel').value); if (v > 0 && v <= 1000 && !hMilyemler.includes(v)) hMilyemler.push(v); $('hmOzel').value = ''; hesapRender(); }
+  $('hmEkle').addEventListener('click', hmEkle);
+  $('hmOzel').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); hmEkle(); } });
+  function hMilyemRender(has) {
+    const list = MILYEM_STD.concat(hMilyemler).filter((v, i, a) => a.indexOf(v) === i).sort((a, b) => a - b);
+    let h = '<div class="h">Milyem</div><div class="h" style="justify-content:flex-start">Karşılığı</div><div class="h">Satış ₺/gr</div><div class="h">Alış ₺/gr</div>';
+    list.forEach(m => {
+      const ab = ayarBilgi(m), std = ab ? ' std' : '', ozel = hMilyemler.includes(m);
+      const alt = ab ? null : AYARLAR.filter(x => x.m < m).sort((a, b) => b.m - a.m)[0];
+      const d = ab ? ab.ad + ' saflık' : alt ? alt.ad + ' + ' + (m - alt.m) + '‰ işçilik' : '—';
+      h += `<div class="m${std}">${m}‰${ozel ? ` <button data-msil="${m}" title="Kaldır">✕</button>` : ''}</div><div class="d${std}">${d}</div>` +
+           `<div class="s${std}">${has ? para(has.satis * m / 1000) : '—'}</div><div class="a${std}">${has ? para(has.alis * m / 1000) : '—'}</div>`;
+    });
+    $('hMilyemTbl').innerHTML = h;
+  }
+  ['htFiyat', 'htGram', 'htAyar'].forEach(id => $(id).addEventListener('input', hesapRender));
+  function htRender(has) {
+    const fiyatTL = +$('htFiyat').value || 0, gram = +$('htGram').value || 0, m = +$('htAyar').value || 916, box = $('htRes');
+    if (!has || !fiyatTL || !gram) { box.innerHTML = '<div class="empty2">Bir takının satış fiyatını ve gramını girin:<br>satış milyemi, gram başı ve yüzde işçilik hesaplanır.<br><small>Rakip fiyatı çözümlemek veya müşteriye "kaç milyemden" satıldığını göstermek için.</small></div>'; return; }
+    const gr = fiyatTL / gram, satisM = gr / has.satis * 1000, malzemeGr = has.satis * m / 1000, iscGr = gr - malzemeGr, iscM = satisM - m, yuzde = malzemeGr > 0 ? iscGr / malzemeGr * 100 : 0;
+    box.innerHTML = `<div class="rt"><span>Ters hesap</span><b>${ayarAdi(m)} · ${para(gram)} gr · ${TLf(fiyatTL)}</b></div>` +
+      `<div class="rl"><span>Gram fiyatı</span><b>${TLf(gr)}</b></div><div class="rl"><span>Satış milyemi</span><b>${satisM.toFixed(1)}‰</b></div>` +
+      `<div class="rl"><span>Malzeme (${m}‰)</span><b>${TLf(malzemeGr)} /gr</b></div>` +
+      `<div class="rtot"><span>İşçilik</span><b>${iscM.toFixed(1)}<small>‰</small></b></div>` +
+      `<div class="rmeta"><span>Gram başına <b>${TLf(iscGr)}</b></span><span>Malzemenin <b>%${yuzde.toFixed(1)}</b></span><span>Toplam işçilik <b>${TLf(iscGr * gram)}</b></span></div>` +
+      (iscM < 0 ? '<div class="rl sub"><span>⚠ Fiyat malzeme değerinin altında — ayar farklı ya da fiyat hatalı olabilir.</span></div>' : '');
+  }
+
+  function hesapRender() {
+    if (!hesapAcikMi()) return;
+    const has = hasFiyati(), s = durum();
+    $('hHasA').textContent = has ? para(has.alis) : '—'; $('hHasS').textContent = has ? para(has.satis) : '—';
+    const elle = has && has.elle;
+    $('hPill').className = 'pill ' + (elle ? 'warn' : s.cls); $('hPillTx').textContent = elle ? 'Has elle girildi' : s.tx;
+    $('hSepetN').textContent = sepet.length;
+    if (hTab === 'satis') hSatisRender(has); else if (hTab === 'alis') hAlisRender(has); else if (hTab === 'sepet') hOzetRender(); else { hMilyemRender(has); htRender(has); }
+  }
+
   // ---------- Tam ekran & kısayollar ----------
   function tamEkranToggle() { if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(() => {}); else document.exitFullscreen(); }
   document.querySelectorAll('[data-act="settings"]').forEach(b => b.addEventListener('click', panelAc));
   document.querySelectorAll('[data-act="full"]').forEach(b => b.addEventListener('click', tamEkranToggle));
   document.addEventListener('keydown', e => {
-    const open = $('panel').classList.contains('open');
-    if (e.key === 'Escape' && open) panelKapat();
-    else if (!open && !e.ctrlKey && !e.altKey) {
-      if (e.key.toLowerCase() === 'f') tamEkranToggle();
-      else if (e.key === 'ArrowRight' && ayar.gorunum === 'vitrin' && vPages.length > 1) { clearInterval(vPageTimer); vitrinSonraki(); vPageTimer = setInterval(vitrinSonraki, ayar.sayfaSuresi * 1000); }
-    }
+    const tag = (e.target.tagName || '').toLowerCase(), yaziyor = tag === 'input' || tag === 'select' || tag === 'textarea';
+    const open = $('panel').classList.contains('open'), hOpen = hesapAcikMi();
+    if (e.key === 'Escape') { if (open) panelKapat(); else if (hOpen && !tezgahModu) hesapKapat(); return; }
+    if (yaziyor || open || e.ctrlKey || e.altKey || e.metaKey) return;
+    const k = e.key.toLowerCase();
+    if (k === 'h') hesapToggle();
+    else if (hOpen) return;
+    else if (k === 'f') tamEkranToggle();
+    else if (e.key === 'ArrowRight' && ayar.gorunum === 'vitrin' && vPages.length > 1) { clearInterval(vPageTimer); vitrinSonraki(); vPageTimer = setInterval(vitrinSonraki, ayar.sayfaSuresi * 1000); }
   });
   let hideTimer = null;
   function barlarGoster() {
@@ -835,10 +1478,13 @@
 
   // ---------- Başlat ----------
   // URL ile geçici görünüm: index.html?view=vitrin  (kaydedilmez)
-  try { const qv = new URLSearchParams(location.search).get('view'); if (qv === 'vitrin' || qv === 'tablo') ayar.gorunum = qv; } catch (e) {}
+  // index.html?view=hesap  → tezgah modu: hesaplayıcı açık başlar (ayrı pencerede tezgah bilgisayarı için)
+  try { const qv = new URLSearchParams(location.search).get('view'); if (qv === 'vitrin' || qv === 'tablo') ayar.gorunum = qv; if (qv === 'hesap') tezgahModu = true; } catch (e) {}
   ayarUygula();
   kaynakKontrol();
-  setInterval(() => { kaynakKontrol(); render(); if (taslak) onizlemeGuncelle(); }, 1000);
+  if (tezgahModu) hesapAc();
+  window.addEventListener('storage', e => { if (e.key === LS_AYAR) { ayar = ayarYukle(); ayarUygula(); if (hesapAcikMi()) { hProdsKur(); hAlisKur(); hesapRender(); } } });
+  setInterval(() => { kaynakKontrol(); render(); if (taslak) onizlemeGuncelle(); hesapRender(); }, 1000);
 })();
 </script>
 </body>
