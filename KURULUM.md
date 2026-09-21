@@ -95,6 +95,7 @@ Her ürün için bu değerleri ⚙ → **Ürün Listesi** bölümünde ürün ka
 İşçilik hesabının baz aldığı has fiyatı ⚙ → **İşçilik Hesap Ayarları**'ndan seçilir: ham piyasa has'ı ya da panodaki komisyonlu has. İnternet yokken **Has fiyatını elle gir** açılarak çalışılabilir.
 
 ### Tezgah Hesaplayıcı (🧮 simge veya **H** tuşu)
+> **Varsayılan olarak kapalıdır.** Kullanmak için ⚙ Ayarlar → Genel Ekran Ayarları → **Tezgah Hesaplayıcı** anahtarını açıp Kaydet'e basın; 🧮 düğmesi ve H tuşu ancak o zaman görünür/çalışır. Sadece fiyat panosu isteyen dükkanlar kapalı bırakır.
 Sekmeler:
 - **Satış Hesabı** — ürün seç, gram gir (hızlı gram düğmeleri var), adet/indirim; malzeme, işçilik, taş, KDV dökümüyle toplam, gram fiyatı, satış milyemi ve hurda geri-alım karşılığı. "Serbest hesap" ile ayar/işçiliği anlık girebilirsiniz. Enter → satışa ekle.
 - **Alış · Hurda & Sarrafiye** — ayar seç, gram gir → hurda ödemesi; ya da çeyrek/yarım/tam alışı adetle.
@@ -110,5 +111,6 @@ Tezgah bilgisayarında ayrı pencere: **hesap-ac.bat** (kurulumda masaüstü kı
 ## Her iki senaryoda ortak
 - **İnternet şart.** Kablolu (Ethernet) bağlantı Wi-Fi'dan daha stabildir.
 - Veri kaynağı: Harem Altın canlı akışı; kesilirse otomatik yedek kaynağa (truncgil, ~1 dk gecikmeli) geçer ve sarı uyarı gösterir.
-- Klavye kısayolları: **F** tam ekran, **H** tezgah hesaplayıcı, **→** vitrin modunda sonraki sayfa, **Esc** ayarları/hesaplayıcıyı kapat.
+- Klavye kısayolları: **F** tam ekran, **T** karanlık/aydınlık tema, **H** tezgah hesaplayıcı (ayarlardan açıksa), **→** vitrin modunda sonraki sayfa, **Esc** ayarları/hesaplayıcıyı kapat.
 - Aynı adresi `?view=vitrin` ekiyle açarsanız ayarı değiştirmeden vitrin görünümü gelir (iki TV'de farklı mod için).
+- **Karanlık / aydınlık mod:** üst çubuktaki ☾/☀ düğmesi ya da ⚙ Ayarlar → Tema. Seçim kaydedilir; aydınlık mod gündüz vitrinde ve parlak dükkanlarda daha okunaklıdır.
